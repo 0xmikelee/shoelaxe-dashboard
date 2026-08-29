@@ -1,0 +1,111 @@
+{
+  "data": [
+    {
+      "id": "177849e2-2252-469a-b2f6-f6377ef350d3",
+      "listing_id": "204922b7-5877-48ae-ba56-f646857b5d0b",
+      "product_sku": "DD1391-106",
+      "size": "US 7",
+      "changed_at": "2026-08-20T05:00:00.000Z",
+      "change_type": "listing_price",
+      "source": "dashboard",
+      "actor_label": "系統自動",
+      "actor_id": null,
+      "previous_value": "1099.00",
+      "new_value": "1199.00",
+      "previous_price": "1099.00",
+      "price": "1199.00",
+      "previous_quantity": null,
+      "quantity": null,
+      "delta": "100.00",
+      "delta_percent": "9.0992"
+    },
+    {
+      "id": "b9da0fca-5d62-4e92-b2b3-3d9bdbe9091a",
+      "listing_id": "204922b7-5877-48ae-ba56-f646857b5d0b",
+      "product_sku": "DD1391-106",
+      "size": "US 7",
+      "changed_at": "2026-08-18T08:00:00.000Z",
+      "change_type": "listing_price",
+      "source": "stockx",
+      "actor_label": "爬取更新",
+      "actor_id": null,
+      "previous_value": "1049.00",
+      "new_value": "1099.00",
+      "previous_price": "1049.00",
+      "price": "1099.00",
+      "previous_quantity": null,
+      "quantity": null,
+      "delta": "50.00",
+      "delta_percent": "4.7664"
+    },
+    {
+      "id": "a655e05f-4510-45e8-bda9-20ba930cafe0",
+      "listing_id": "204922b7-5877-48ae-ba56-f646857b5d0b",
+      "product_sku": "DD1391-106",
+      "size": "US 7",
+      "changed_at": "2026-08-16T06:00:00.000Z",
+      "change_type": "listing_price",
+      "source": "dashboard",
+      "actor_label": "陳雅婷",
+      "actor_id": "bf578f09-a291-4ce7-9f5d-4a3664067a76",
+      "previous_value": "899.00",
+      "new_value": "949.00",
+      "previous_price": "899.00",
+      "price": "949.00",
+      "previous_quantity": null,
+      "quantity": null,
+      "delta": "50.00",
+      "delta_percent": "5.5617"
+    },
+    {
+      "id": "0aa20d9a-c58a-4ddf-94b6-d16fe7493044",
+      "listing_id": "204922b7-5877-48ae-ba56-f646857b5d0b",
+      "product_sku": "DD1391-106",
+      "size": "US 7",
+      "changed_at": "2026-08-16T05:00:00.000Z",
+      "change_type": "listing_price",
+      "source": "dashboard",
+      "actor_label": "分組批次更新",
+      "actor_id": null,
+      "previous_value": "949.00",
+      "new_value": "1049.00",
+      "previous_price": "949.00",
+      "price": "1049.00",
+      "previous_quantity": null,
+      "quantity": null,
+      "delta": "100.00",
+      "delta_percent": "10.5374"
+    },
+    {
+      "id": "1fad974f-3f82-4819-877f-1ba5219a91d7",
+      "listing_id": "204922b7-5877-48ae-ba56-f646857b5d0b",
+      "product_sku": "DD1391-106",
+      "size": "US 7",
+      "changed_at": "2026-08-14T17:00:00.000Z",
+      "change_type": "listing_price",
+      "source": "dashboard",
+      "actor_label": "林俊傑",
+      "actor_id": "72420da3-3047-4498-b8b7-b235607e9b4a",
+      "previous_value": "849.00",
+      "new_value": "899.00",
+      "previous_price": "849.00",
+      "price": "899.00",
+      "previous_quantity": null,
+      "quantity": null,
+      "delta": "50.00",
+      "delta_percent": "5.8893"
+    }
+  ],
+  "meta": {
+    "total": 5,
+    "page": 1,
+    "per_page": 20,
+    "total_pages": 1,
+    "publishing": {
+      "enabled": false
+    },
+    "sizes": [
+      "US 7"
+    ]
+  }
+}

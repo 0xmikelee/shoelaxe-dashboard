@@ -1,26 +1,217 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
+@custom-variant dark (&:is(.dark *));
+
+/**
+ * Values are the design's hex, verbatim from docs/DESIGN-TOKENS.md, which is itself diffed against
+ * the .pen variables panel. They are deliberately NOT converted to oklch: the conversion is lossy
+ * and unreviewable, and it would put a transform between the design source and this file for gamut
+ * headroom a dense internal tool never spends.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f2f3f0;
+  --foreground: #111111;
+  --card: #ffffff;
+  --card-foreground: #111111;
+  --popover: #ffffff;
+  --popover-foreground: #111111;
+  --primary: #ff8400;
+  --primary-foreground: #111111;
+  --secondary: #e7e8e5;
+  --secondary-foreground: #111111;
+  --muted: #f2f3f0;
+  --muted-foreground: #666666;
+  --accent: #f2f3f0;
+  --accent-foreground: #111111;
+  --border: #cbccc9;
+  --input: #cbccc9;
+  --ring: #666666;
+
+  /* The solid colour of a destructive action. NOT the same token as --error, which is the tinted
+     background of an error badge; merging them turns every failed-row chip into a red block. */
+  --destructive: #d93c15;
+
+  /* Tinted background + saturated foreground. Badges, callouts, Δ values. */
+  --success: #dfe6e1;
+  --success-foreground: #004d1a;
+  --warning: #e9e3d8;
+  --warning-foreground: #804200;
+  --error: #e5dcda;
+  --error-foreground: #8c1c00;
+  --info: #dfdfe6;
+  --info-foreground: #000066;
+
+  /* The rail is dark on the light canvas too. Declared here and deliberately absent from .dark, so
+     the invariant holds by construction rather than by a dark: override someone can delete. */
+  --nav: #0f1117;
+  --nav-foreground: #94a3b8;
+  --nav-active: #1e293b;
+  --nav-active-foreground: #ffffff;
+
+  /* Modal scrim: --foreground at 60%. One value for both themes — a white scrim over the dark
+     canvas would be a light-box, not a scrim. */
+  --overlay: #11111199;
+
+  /* Card, modal, panel. Read directly by components/ui/{sonner,input-group}.tsx. */
+  --radius: 8px;
+
+  /* shadcn's theme-following sidebar set. No screen uses it — the rail runs on --nav — but the
+     primitives reference it, so it stays declared as aliases rather than as a second palette to
+     keep in sync. Aliases resolve per element, so these follow .dark without being repeated there. */
+  --sidebar: var(--card);
+  --sidebar-foreground: var(--foreground);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: var(--primary-foreground);
+  --sidebar-accent: var(--accent);
+  --sidebar-accent-foreground: var(--accent-foreground);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--ring);
+}
+
+.dark {
+  --background: #111111;
+  --foreground: #ffffff;
+  --card: #1a1a1a;
+  --card-foreground: #ffffff;
+  --popover: #1a1a1a;
+  --popover-foreground: #ffffff;
+  --primary: #ff8400;
+  --primary-foreground: #111111;
+  --secondary: #2e2e2e;
+  --secondary-foreground: #ffffff;
+  --muted: #2e2e2e;
+  --muted-foreground: #b8b9b6;
+  --accent: #111111;
+  --accent-foreground: #f2f3f0;
+  --border: #2e2e2e;
+  --input: #2e2e2e;
+  --ring: #666666;
+  --destructive: #ff5c33;
+
+  --success: #222924;
+  --success-foreground: #b6ffce;
+  --warning: #291c0f;
+  --warning-foreground: #ff8400;
+  --error: #24100b;
+  --error-foreground: #ff5c33;
+  --info: #222229;
+  --info-foreground: #b2b2ff;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-destructive: var(--destructive);
+
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-error: var(--error);
+  --color-error-foreground: var(--error-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+
+  --color-nav: var(--nav);
+  --color-nav-foreground: var(--nav-foreground);
+  --color-nav-active: var(--nav-active);
+  --color-nav-active-foreground: var(--nav-active-foreground);
+
+  --color-overlay: var(--overlay);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/**
+ * `static` so every variable below is emitted into :root whether or not a utility referenced it.
+ * components/ui/button.tsx reaches for --radius-md inside an arbitrary value
+ * (`rounded-[min(var(--radius-md),10px)]`), and the /tokens page reads the scale at runtime; under
+ * Tailwind's default unused-variable pruning both would resolve to nothing.
+ */
+@theme static {
+  /* Inter carries no CJK glyphs. Without the three CJK faces every Chinese label falls back to an
+     arbitrary system font with different metrics and the layout stops matching the 1440 canvas. */
+  --font-sans:
+    var(--font-inter), "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-heading: var(--font-sans);
+
+  /* Nine explicit sizes, no ramp to interpolate — this is a data tool, not a marketing page.
+     10 badge micro-label · 10.5 badge · 11 meta/timestamp/column header · 11.5 Δ value ·
+     12 cell text and links · 12.5 dense cell and card title · 13 price · 14 panel title ·
+     15 section heading. Line height is `normal` throughout. */
+  --text-micro: 10px;
+  --text-micro--line-height: normal;
+  --text-badge: 10.5px;
+  --text-badge--line-height: normal;
+  --text-meta: 11px;
+  --text-meta--line-height: normal;
+  --text-label: 11.5px;
+  --text-label--line-height: normal;
+  --text-body: 12px;
+  --text-body--line-height: normal;
+  --text-cell: 12.5px;
+  --text-cell--line-height: normal;
+  --text-num: 13px;
+  --text-num--line-height: normal;
+  --text-title: 14px;
+  --text-title--line-height: normal;
+  --text-section: 15px;
+  --text-section--line-height: normal;
+
+  /* Tailwind's own scale is remapped onto the radii the screens actually use, rather than given new
+     names: shadcn's existing `rounded-md` on Button then already lands on the design. The .pen
+     file's --radius-m: 16 is used by zero screens and is not reintroduced. */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-full: 999px;
+}
+
+/**
+ * Every number in this UI is mono — prices, sizes, quantities, percentages, deltas, SKUs, dates,
+ * times — and everything else is Inter. Money, Percent, Delta, SizeLabel and Timestamp all render
+ * through this one utility so the rule cannot be forgotten one component at a time. tabular-nums
+ * additionally holds the fixed-width table columns in alignment.
+ */
+@utility num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
   }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
 }

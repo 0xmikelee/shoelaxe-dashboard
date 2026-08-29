@@ -1,0 +1,37 @@
+# docs/PROMPT.md §5, one row per situation, driven through decide() by tests/unit/domain.decisionTable.test.ts.
+#
+# This file exists to be read, not just to run: branch coverage proves the code does what it says,
+# and only a reviewer holding this next to §5 can tell whether what it says is the brief. Keep one
+# situation per line, keep the order of §5's table, and never widen a row to make a test pass.
+#
+# Money is a wire string in HKD. `-` is NULL. Booleans are yes/no. status `new` means the listing did
+# not exist. margin_source `none` means the §5 chain came up empty. exp_delta is compared to 1e-6.
+id,situation,status,approved,pending,base_cost,pct,fixed,margin_source,rounding,band_up,band_down,qty_changed,trigger,exp_status,exp_outcome,exp_reason,exp_price,exp_raw,exp_approved,exp_pending,exp_margin_source,exp_delta,exp_history,exp_enqueue
+01,no listing existed - always manual,new,-,-,1200.00,12,0.00,default,yes,10,10,yes,ingest,pending_new,new_listing,no_listing,1349.00,1344.00,-,1349.00,default,-,no,no
+02,no listing and no margins - blocked on the margins,new,-,-,1200.00,-,-,none,yes,10,10,no,ingest,needs_margins,needs_margins,no_margins,-,-,-,-,-,-,no,no
+03,margin chain empties on a never-listed size,pending_new,-,1349.00,1200.00,-,-,none,yes,10,10,no,ingest,needs_margins,needs_margins,no_margins,-,-,-,-,-,-,no,no
+04,margin chain empties on a live size - price stays live,approved,1349.00,-,1200.00,-,-,none,yes,10,10,no,ingest,approved,needs_margins,no_margins_live,-,-,1349.00,-,-,-,no,no
+05,listing rejected - cost saved and not re-queued,rejected,-,-,1300.00,12,0.00,default,yes,10,10,no,ingest,rejected,cost_change,listing_rejected,-,-,-,-,default,-,no,no
+06,listing inactive - cost saved and not re-queued,inactive,1349.00,-,1300.00,12,0.00,default,yes,10,10,no,ingest,inactive,cost_change,listing_inactive,-,-,1349.00,-,default,-,no,no
+07,price unchanged - no history and no enqueue,approved,1349.00,-,1200.00,12,0.00,default,yes,10,10,no,ingest,approved,no_change,price_unchanged,1349.00,1344.00,1349.00,-,default,0,no,no
+08,quantity only - inventory syncs without approval,approved,1349.00,-,1200.00,12,0.00,default,yes,10,10,yes,ingest,approved,quantity_change,quantity_only,1349.00,1344.00,1349.00,-,default,0,no,yes
+09,held proposal evaporates when the price returns,pending_price,1349.00,1499.00,1200.00,12,0.00,default,yes,10,10,no,ingest,approved,no_change,price_unchanged,1349.00,1344.00,1349.00,-,default,0,no,no
+10,delta exactly +10.000 percent - band is inclusive,approved,1000.00,-,1000.00,10,0.00,override,no,10,10,no,ingest,approved,auto_approved,within_band,1100.00,1100.00,1100.00,-,override,10,yes,yes
+11,delta +10.001 percent - held,approved,1000.00,-,1000.00,10.001,0.00,override,no,10,10,no,ingest,pending_price,held_for_approval,outside_band,1100.01,1100.01,1000.00,1100.01,override,10.001,no,no
+12,delta exactly -10.000 percent - band is inclusive,approved,1000.00,-,900.00,0,0.00,override,no,10,10,no,ingest,approved,auto_approved,within_band,900.00,900.00,900.00,-,override,-10,yes,yes
+13,asymmetric band up10 down8 - delta -9 percent held,approved,1000.00,-,910.00,0,0.00,override,no,10,8,no,ingest,pending_price,held_for_approval,outside_band,910.00,910.00,1000.00,910.00,override,-9,no,no
+14,asymmetric band up10 down8 - delta -8 percent approved,approved,1000.00,-,920.00,0,0.00,override,no,10,8,no,ingest,approved,auto_approved,within_band,920.00,920.00,920.00,-,override,-8,yes,yes
+15,null approved price on pending_new - hold not divide,pending_new,-,-,1200.00,12,0.00,default,yes,10,10,no,ingest,pending_new,held_for_approval,no_approved_price,1349.00,1344.00,-,1349.00,default,-,no,no
+16,null approved price on needs_margins - hold not divide,needs_margins,-,-,1200.00,12,0.00,default,yes,10,10,no,ingest,pending_new,held_for_approval,no_approved_price,1349.00,1344.00,-,1349.00,default,-,no,no
+17,approved price of zero - explicit division guard,approved,0.00,-,1200.00,12,0.00,default,yes,10,10,no,ingest,pending_price,held_for_approval,zero_approved_price,1349.00,1344.00,0.00,1349.00,default,-,no,no
+18,manual price adjustment bypasses the band,approved,1000.00,-,2000.00,0,0.00,override,no,10,10,no,manual,approved,auto_approved,human_bypass,2000.00,2000.00,2000.00,-,override,100,yes,yes
+19,group batch apply bypasses the band - API-GAPS Gap 1,approved,1000.00,-,2000.00,0,0.00,override,no,10,10,no,batch,approved,auto_approved,human_bypass,2000.00,2000.00,2000.00,-,override,100,yes,yes
+20,batch never lists a size that was never approved,pending_new,-,-,2000.00,0,0.00,override,no,10,10,no,batch,pending_new,held_for_approval,no_approved_price,2000.00,2000.00,-,2000.00,override,-,no,no
+21,manual price inside the band is still a bypass,approved,1000.00,-,1050.00,0,0.00,override,no,10,10,no,manual,approved,auto_approved,human_bypass,1050.00,1050.00,1050.00,-,override,5,yes,yes
+22,rounding disabled - the raw price is the price,approved,1000.00,-,1200.00,12,0.00,default,no,10,10,no,ingest,pending_price,held_for_approval,outside_band,1344.00,1344.00,1000.00,1344.00,default,34.4,no,no
+23,raw already on the x49 tail - no rounding step,approved,1349.00,-,1349.00,0,0.00,override,yes,10,10,no,ingest,approved,no_change,price_unchanged,1349.00,1349.00,1349.00,-,override,0,no,no
+24,held price still syncs the quantity,approved,1000.00,-,1200.00,12,0.00,default,yes,10,10,yes,ingest,pending_price,held_for_approval,outside_band,1349.00,1344.00,1000.00,1349.00,default,34.9,no,yes
+25,sub-HK$100 rounding applies literally - 30 becomes 49,approved,45.00,-,30.00,0,0.00,override,yes,10,10,no,ingest,approved,auto_approved,within_band,49.00,30.00,49.00,-,override,8.888889,yes,yes
+26,rounding runs before the band test - 1900 becomes 1949,approved,1900.00,-,1900.00,0,0.00,override,yes,10,10,no,ingest,approved,auto_approved,within_band,1949.00,1900.00,1949.00,-,override,2.578947,yes,yes
+27,unchanged pending price is not re-held - and Δ has no denominator,pending_new,-,1349.00,1200.00,12,0.00,default,yes,10,10,no,ingest,pending_new,no_change,price_unchanged,1349.00,1344.00,-,1349.00,default,-,no,no
+28,margin chain empties on a live size - stock still syncs,approved,1349.00,-,1200.00,-,-,none,yes,10,10,yes,ingest,approved,needs_margins,no_margins_live,-,-,1349.00,-,-,-,no,yes

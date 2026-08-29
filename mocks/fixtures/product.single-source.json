@@ -1,0 +1,431 @@
+{
+  "data": {
+    "sku": "FQ8080-109",
+    "name": "Dunk High Retro Vast Grey",
+    "name_zh": "Dunk High 復古 淺灰",
+    "title": "Dunk High Retro Vast Grey",
+    "body_html": "<p>Dunk High Retro「淺灰」。原廠公司貨，附原盒。</p>",
+    "vendor": "Nike",
+    "product_type": "Sneakers",
+    "tags": [
+      "nike",
+      "sneakers",
+      "vast grey"
+    ],
+    "stockx_name": "Dunk High Retro Vast Grey",
+    "group": {
+      "id": "36250586-180d-4a0c-b13b-8428a27efceb",
+      "name": "Nike Dunk 系列",
+      "is_default": false
+    },
+    "status": "listed",
+    "images": [
+      {
+        "id": "77947763-78ea-4cf0-aa4d-cae25f19e703",
+        "url": "https://cdn.shoelaxe.test/products/FQ8080-109/1.jpg",
+        "sort_order": 0,
+        "is_primary": true,
+        "width": 1200,
+        "height": 1200,
+        "bytes": 180000,
+        "created_at": "2026-07-15T02:00:00.000Z"
+      },
+      {
+        "id": "3b61bd28-06e3-4729-b34e-fa1558ae5668",
+        "url": "https://cdn.shoelaxe.test/products/FQ8080-109/2.jpg",
+        "sort_order": 1,
+        "is_primary": false,
+        "width": 1200,
+        "height": 1200,
+        "bytes": 192000,
+        "created_at": "2026-07-16T02:00:00.000Z"
+      },
+      {
+        "id": "b85b20dc-7e4a-4747-b24b-851c1813017e",
+        "url": "https://cdn.shoelaxe.test/products/FQ8080-109/3.jpg",
+        "sort_order": 2,
+        "is_primary": false,
+        "width": 1200,
+        "height": 1200,
+        "bytes": 204000,
+        "created_at": "2026-07-17T02:00:00.000Z"
+      }
+    ],
+    "listings": [
+      {
+        "id": "05fd8c27-93e9-4958-b57b-de23115ea537",
+        "product_sku": "FQ8080-109",
+        "product_name": "Dunk High Retro Vast Grey",
+        "name_zh": "Dunk High 復古 淺灰",
+        "size": "US 7",
+        "currency": "HKD",
+        "approval_status": "approved",
+        "base_cost": "1215.00",
+        "base_cost_source": "stockx",
+        "base_cost_at": "2026-08-23T03:00:00.000Z",
+        "margin_percent": "15.0000",
+        "margin_fixed": "150.00",
+        "margin_source": "group",
+        "margin_override_percent": null,
+        "margin_override_fixed": null,
+        "raw_price": "1547.25",
+        "rounding_applied": true,
+        "approved_price": "1549.00",
+        "approved_at": "2026-08-23T06:00:00.000Z",
+        "previous_approved_price": "1449.00",
+        "previous_approved_at": "2026-08-10T03:00:00.000Z",
+        "pending_price": null,
+        "pending_since": null,
+        "pending_update_id": null,
+        "in_house_markup": null,
+        "sources": [
+          {
+            "source": "stockx",
+            "cost": "1215.00",
+            "cost_at": "2026-08-23T03:00:00.000Z",
+            "previous_cost": "1186.00",
+            "previous_cost_at": "2026-08-22T03:00:00.000Z",
+            "quantity": 1,
+            "last_source_ref": "stockx:FQ8080-109:US7",
+            "last_synced_at": "2026-08-23T03:00:00.000Z",
+            "editable": false
+          }
+        ],
+        "updated_at": "2026-08-23T03:00:00.000Z"
+      },
+      {
+        "id": "931cfc97-9243-4b6e-ae11-623f92a7f17e",
+        "product_sku": "FQ8080-109",
+        "product_name": "Dunk High Retro Vast Grey",
+        "name_zh": "Dunk High 復古 淺灰",
+        "size": "US 7.5",
+        "currency": "HKD",
+        "approval_status": "approved",
+        "base_cost": "1025.00",
+        "base_cost_source": "stockx",
+        "base_cost_at": "2026-08-22T22:00:00.000Z",
+        "margin_percent": "10.0000",
+        "margin_fixed": "100.00",
+        "margin_source": "override",
+        "margin_override_percent": "10.0000",
+        "margin_override_fixed": "100.00",
+        "raw_price": "1227.50",
+        "rounding_applied": true,
+        "approved_price": "1249.00",
+        "approved_at": "2026-08-19T05:00:00.000Z",
+        "previous_approved_price": null,
+        "previous_approved_at": null,
+        "pending_price": null,
+        "pending_since": null,
+        "pending_update_id": null,
+        "in_house_markup": null,
+        "sources": [
+          {
+            "source": "stockx",
+            "cost": "1025.00",
+            "cost_at": "2026-08-22T22:00:00.000Z",
+            "previous_cost": "1045.00",
+            "previous_cost_at": "2026-08-21T22:00:00.000Z",
+            "quantity": 1,
+            "last_source_ref": "stockx:FQ8080-109:US7.5",
+            "last_synced_at": "2026-08-22T22:00:00.000Z",
+            "editable": false
+          }
+        ],
+        "updated_at": "2026-08-23T09:00:00.000Z"
+      },
+      {
+        "id": "06177bb3-9989-48a4-a4a8-294ee958624f",
+        "product_sku": "FQ8080-109",
+        "product_name": "Dunk High Retro Vast Grey",
+        "name_zh": "Dunk High 復古 淺灰",
+        "size": "US 8",
+        "currency": "HKD",
+        "approval_status": "pending_price",
+        "base_cost": "1294.00",
+        "base_cost_source": "stockx",
+        "base_cost_at": "2026-08-22T10:00:00.000Z",
+        "margin_percent": "15.0000",
+        "margin_fixed": "150.00",
+        "margin_source": "group",
+        "margin_override_percent": null,
+        "margin_override_fixed": null,
+        "raw_price": "1638.10",
+        "rounding_applied": true,
+        "approved_price": "1999.00",
+        "approved_at": "2026-08-12T17:00:00.000Z",
+        "previous_approved_price": null,
+        "previous_approved_at": null,
+        "pending_price": "1649.00",
+        "pending_since": "2026-08-21T01:00:00.000Z",
+        "pending_update_id": "64c763de-46ab-4f69-b90a-4ae442c2dbdc",
+        "in_house_markup": null,
+        "sources": [
+          {
+            "source": "stockx",
+            "cost": "1294.00",
+            "cost_at": "2026-08-22T10:00:00.000Z",
+            "previous_cost": "1354.00",
+            "previous_cost_at": "2026-08-21T10:00:00.000Z",
+            "quantity": 1,
+            "last_source_ref": "stockx:FQ8080-109:US8",
+            "last_synced_at": "2026-08-22T10:00:00.000Z",
+            "editable": false
+          }
+        ],
+        "updated_at": "2026-08-22T16:00:00.000Z"
+      },
+      {
+        "id": "ee530cc2-9af5-441a-8493-ce2c42679579",
+        "product_sku": "FQ8080-109",
+        "product_name": "Dunk High Retro Vast Grey",
+        "name_zh": "Dunk High 復古 淺灰",
+        "size": "US 8.5",
+        "currency": "HKD",
+        "approval_status": "pending_new",
+        "base_cost": "1157.00",
+        "base_cost_source": "stockx",
+        "base_cost_at": "2026-08-22T14:00:00.000Z",
+        "margin_percent": "15.0000",
+        "margin_fixed": "150.00",
+        "margin_source": "group",
+        "margin_override_percent": null,
+        "margin_override_fixed": null,
+        "raw_price": "1480.55",
+        "rounding_applied": true,
+        "approved_price": null,
+        "approved_at": null,
+        "previous_approved_price": null,
+        "previous_approved_at": null,
+        "pending_price": "1499.00",
+        "pending_since": "2026-08-21T15:00:00.000Z",
+        "pending_update_id": "bec341c0-9f0a-488d-bc02-a4df793eb560",
+        "in_house_markup": null,
+        "sources": [
+          {
+            "source": "stockx",
+            "cost": "1157.00",
+            "cost_at": "2026-08-22T14:00:00.000Z",
+            "previous_cost": "1210.00",
+            "previous_cost_at": "2026-08-21T14:00:00.000Z",
+            "quantity": 1,
+            "last_source_ref": "stockx:FQ8080-109:US8.5",
+            "last_synced_at": "2026-08-22T14:00:00.000Z",
+            "editable": false
+          }
+        ],
+        "updated_at": "2026-08-23T04:00:00.000Z"
+      },
+      {
+        "id": "ba38ebf3-f369-42ef-bd0c-25010856ed08",
+        "product_sku": "FQ8080-109",
+        "product_name": "Dunk High Retro Vast Grey",
+        "name_zh": "Dunk High 復古 淺灰",
+        "size": "US 9",
+        "currency": "HKD",
+        "approval_status": "approved",
+        "base_cost": "1297.00",
+        "base_cost_source": "stockx",
+        "base_cost_at": "2026-08-23T16:00:00.000Z",
+        "margin_percent": "15.0000",
+        "margin_fixed": "150.00",
+        "margin_source": "group",
+        "margin_override_percent": null,
+        "margin_override_fixed": null,
+        "raw_price": "1641.55",
+        "rounding_applied": true,
+        "approved_price": "1649.00",
+        "approved_at": "2026-08-21T06:00:00.000Z",
+        "previous_approved_price": null,
+        "previous_approved_at": null,
+        "pending_price": null,
+        "pending_since": null,
+        "pending_update_id": null,
+        "in_house_markup": null,
+        "sources": [
+          {
+            "source": "stockx",
+            "cost": "1297.00",
+            "cost_at": "2026-08-23T16:00:00.000Z",
+            "previous_cost": "1287.00",
+            "previous_cost_at": "2026-08-22T16:00:00.000Z",
+            "quantity": 1,
+            "last_source_ref": "stockx:FQ8080-109:US9",
+            "last_synced_at": "2026-08-23T16:00:00.000Z",
+            "editable": false
+          }
+        ],
+        "updated_at": "2026-08-22T08:00:00.000Z"
+      },
+      {
+        "id": "e6e80fae-bd96-4708-ba02-56f5ebcc146c",
+        "product_sku": "FQ8080-109",
+        "product_name": "Dunk High Retro Vast Grey",
+        "name_zh": "Dunk High 復古 淺灰",
+        "size": "US 9.5",
+        "currency": "HKD",
+        "approval_status": "approved",
+        "base_cost": "1290.00",
+        "base_cost_source": "stockx",
+        "base_cost_at": "2026-08-22T21:00:00.000Z",
+        "margin_percent": "15.0000",
+        "margin_fixed": "150.00",
+        "margin_source": "group",
+        "margin_override_percent": null,
+        "margin_override_fixed": null,
+        "raw_price": "1633.50",
+        "rounding_applied": true,
+        "approved_price": "1649.00",
+        "approved_at": "2026-08-14T15:00:00.000Z",
+        "previous_approved_price": "1649.00",
+        "previous_approved_at": "2026-07-22T22:00:00.000Z",
+        "pending_price": null,
+        "pending_since": null,
+        "pending_update_id": null,
+        "in_house_markup": null,
+        "sources": [
+          {
+            "source": "stockx",
+            "cost": "1290.00",
+            "cost_at": "2026-08-22T21:00:00.000Z",
+            "previous_cost": "1255.00",
+            "previous_cost_at": "2026-08-21T21:00:00.000Z",
+            "quantity": 1,
+            "last_source_ref": "stockx:FQ8080-109:US9.5",
+            "last_synced_at": "2026-08-22T21:00:00.000Z",
+            "editable": false
+          }
+        ],
+        "updated_at": "2026-08-21T01:00:00.000Z"
+      },
+      {
+        "id": "325dbd7f-3c82-47da-93d0-abdf314bd3a2",
+        "product_sku": "FQ8080-109",
+        "product_name": "Dunk High Retro Vast Grey",
+        "name_zh": "Dunk High 復古 淺灰",
+        "size": "US 10",
+        "currency": "HKD",
+        "approval_status": "pending_new",
+        "base_cost": "1239.00",
+        "base_cost_source": "stockx",
+        "base_cost_at": "2026-08-23T17:00:00.000Z",
+        "margin_percent": "15.0000",
+        "margin_fixed": "150.00",
+        "margin_source": "group",
+        "margin_override_percent": null,
+        "margin_override_fixed": null,
+        "raw_price": "1574.85",
+        "rounding_applied": true,
+        "approved_price": null,
+        "approved_at": null,
+        "previous_approved_price": null,
+        "previous_approved_at": null,
+        "pending_price": "1599.00",
+        "pending_since": "2026-08-22T21:00:00.000Z",
+        "pending_update_id": "1e3423a2-992c-47d3-95b2-28112969d193",
+        "in_house_markup": null,
+        "sources": [
+          {
+            "source": "stockx",
+            "cost": "1239.00",
+            "cost_at": "2026-08-23T17:00:00.000Z",
+            "previous_cost": "1239.00",
+            "previous_cost_at": "2026-08-22T17:00:00.000Z",
+            "quantity": 1,
+            "last_source_ref": "stockx:FQ8080-109:US10",
+            "last_synced_at": "2026-08-23T17:00:00.000Z",
+            "editable": false
+          }
+        ],
+        "updated_at": "2026-08-22T07:00:00.000Z"
+      },
+      {
+        "id": "1d2e3717-6115-428e-ac7e-1aac9bd0a257",
+        "product_sku": "FQ8080-109",
+        "product_name": "Dunk High Retro Vast Grey",
+        "name_zh": "Dunk High 復古 淺灰",
+        "size": "US 10.5",
+        "currency": "HKD",
+        "approval_status": "approved",
+        "base_cost": "1044.00",
+        "base_cost_source": "stockx",
+        "base_cost_at": "2026-08-23T10:00:00.000Z",
+        "margin_percent": "15.0000",
+        "margin_fixed": "150.00",
+        "margin_source": "group",
+        "margin_override_percent": null,
+        "margin_override_fixed": null,
+        "raw_price": "1350.60",
+        "rounding_applied": true,
+        "approved_price": "1399.00",
+        "approved_at": "2026-08-17T15:00:00.000Z",
+        "previous_approved_price": "1299.00",
+        "previous_approved_at": "2026-07-29T14:00:00.000Z",
+        "pending_price": null,
+        "pending_since": null,
+        "pending_update_id": null,
+        "in_house_markup": null,
+        "sources": [
+          {
+            "source": "stockx",
+            "cost": "1044.00",
+            "cost_at": "2026-08-23T10:00:00.000Z",
+            "previous_cost": null,
+            "previous_cost_at": null,
+            "quantity": 1,
+            "last_source_ref": "stockx:FQ8080-109:US10.5",
+            "last_synced_at": "2026-08-23T10:00:00.000Z",
+            "editable": false
+          }
+        ],
+        "updated_at": "2026-08-20T10:00:00.000Z"
+      }
+    ],
+    "aggregates": {
+      "size_count": 8,
+      "in_stock_size_count": 0,
+      "total_in_house_quantity": 0,
+      "cost": {
+        "min": "1025.00",
+        "max": "1297.00"
+      },
+      "price": {
+        "min": "1249.00",
+        "max": "1999.00"
+      },
+      "margin_percent": {
+        "min": "10.0000",
+        "max": "15.0000"
+      },
+      "margin_fixed": {
+        "min": "100.00",
+        "max": "150.00"
+      },
+      "margin_source_mix": {
+        "override": 1,
+        "group": 7,
+        "default": 0,
+        "none": 0
+      },
+      "override_count": 1,
+      "has_size_variance": true,
+      "source_count": 1
+    },
+    "margin_summary": {
+      "kind": "mixed",
+      "percent": null,
+      "fixed": null,
+      "percent_range": {
+        "min": "10.0000",
+        "max": "15.0000"
+      },
+      "fixed_range": {
+        "min": "100.00",
+        "max": "150.00"
+      }
+    },
+    "last_imported_at": "2026-08-17T23:00:00.000Z",
+    "updated_at": "2026-08-20T06:00:00.000Z",
+    "created_at": "2026-04-15T02:00:00.000Z"
+  }
+}

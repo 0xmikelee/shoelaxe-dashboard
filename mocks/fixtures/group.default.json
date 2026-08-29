@@ -1,0 +1,23 @@
+{
+  "data": {
+    "id": "828632c3-0b96-4e2d-9dec-9f9bae7b5102",
+    "name": "預設分組",
+    "is_default": true,
+    "margin_percent": null,
+    "margin_fixed": null,
+    "product_count": 8,
+    "listing_count": 61,
+    "updated_at": "2026-07-25T02:00:00.000Z",
+    "scope_counts": {
+      "all": 59,
+      "group_rule_only": 52,
+      "overridden_only": 7
+    },
+    "ineligible": {
+      "total": 2,
+      "inactive": 1,
+      "rejected": 1,
+      "missing_cost": 0
+    }
+  }
+}

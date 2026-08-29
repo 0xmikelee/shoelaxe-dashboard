@@ -1,0 +1,58 @@
+---
+description: Shoelaxe Dashboard — project context, architecture and non-negotiable rules
+alwaysApply: true
+---
+
+# Shoelaxe Dashboard
+
+Read **[docs/CONTEXT.md](mdc:docs/CONTEXT.md)** before answering anything non-trivial. It carries
+the current state of the tree, the repo map, the contract architecture, and a list of traps that
+have already cost time once. `docs/` also holds the authoritative brief (`PROMPT.md`), the frozen
+DDL (`SCHEMA-007-012.md`), the per-screen matrix (`FRONTEND-SCREENS.md`), the 38 numbered API gaps
+(`API-GAPS.md`) and the design tokens (`DESIGN-TOKENS.md`).
+
+## This is not the Next.js in your training data
+
+Next **16.3.1**, React 19.2.8, Tailwind **v4** (CSS-first `@theme`, no `tailwind.config.js`).
+`middleware.ts` no longer exists — the convention is **`proxy.ts`**. `images.qualities` is
+mandatory. Check `node_modules/next/dist/docs/` before writing framework code, and heed deprecation
+notices.
+
+## Never violate
+
+- **`lib/domain/**` is pure** — no I/O, no `postgres`, no `lib/db`, no `node:*`, no `react`. eslint
+  enforces it. It is client-importable on purpose, so a price preview uses the same function the
+  server decides with.
+- **Never `await fetch()` inside `sql.begin()`.** Network calls are enqueued, never inline.
+- **`DATABASE_URL` is the Supavisor pooler in session mode**, never `db.<ref>.supabase.co` —
+  IPv6-only and unreachable from DigitalOcean App Platform.
+- **`lib/env.ts` validates lazily** via memoized `getEnv()`; a module-scope parse breaks the Docker
+  build.
+- **`supabase-js` is auth + Storage only**; all data access goes through `postgres.js`.
+- **Money is integer cents** in the domain; `numeric` stays a string until the domain boundary.
+- **Migrations and Apps Script changes go in `../Shoelaxe/`**, not this repo.
+- **Every mutation writes an `audit_log` row.**
+
+## Contract flow — do not shortcut it
+
+Zod schemas are the source of truth. `docs/openapi.json` and `lib/api/schema.d.ts` are **generated**
+— never hand-edit either.
+
+```
+lib/schemas/wire/** + lib/api/contract/** → pnpm contract → docs/openapi.json → lib/api/schema.d.ts
+```
+
+Landing a real backend route means: import the shared wire schema (never an inline `z.object`),
+**delete the matching provisional entry from `lib/api/contract/**` in the same commit**, then
+`pnpm contract`. `contract.identity.test.ts` and `contract.provisional.test.ts` enforce both.
+
+## Conventions
+
+- pnpm. `pnpm test` (unit, fast), `pnpm test:components` (jsdom), `pnpm test:int` (needs Docker).
+- API responses are `{data, meta?}` or `{error: {code, message, details?, request_id}}`, one
+  canonical HTTP status per error code.
+- All user-visible text lives in `lib/i18n/zh-Hant.ts` — never inline a Chinese string.
+- Every number renders through `components/format/*` so it gets mono + tabular-nums.
+- Add a `--text-*` size to `app/globals.css` and you **must** add it to `TEXT_SIZES` in
+  `lib/utils.ts`, or `cn()` silently drops it.
+- Store UTC, display `Asia/Hong_Kong`. HKD only.

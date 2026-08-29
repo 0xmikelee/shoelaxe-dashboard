@@ -1,0 +1,450 @@
+{
+  "data": {
+    "sku": "DZ5485-106",
+    "name": "Air Jordan 1 Retro High OG SP Palomino",
+    "name_zh": "Air Jordan 1 高筒復古 OG SP 淺棕",
+    "title": "Air Jordan 1 Retro High OG SP Palomino",
+    "body_html": "<p>Air Jordan 1 Retro High OG SP「淺棕」。原廠公司貨，附原盒。</p>",
+    "vendor": "Jordan",
+    "product_type": "Sneakers",
+    "tags": [
+      "jordan",
+      "sneakers",
+      "palomino"
+    ],
+    "stockx_name": "Air Jordan 1 Retro High OG SP Palomino",
+    "group": {
+      "id": "e5d61a93-be8f-4d5d-8812-4b65526ecfdd",
+      "name": "Jordan 1 系列",
+      "is_default": false
+    },
+    "status": "listed",
+    "images": [],
+    "listings": [
+      {
+        "id": "f029c3a2-125c-42d6-be65-6039542c5ae6",
+        "product_sku": "DZ5485-106",
+        "product_name": "Air Jordan 1 Retro High OG SP Palomino",
+        "name_zh": "Air Jordan 1 高筒復古 OG SP 淺棕",
+        "size": "US 7",
+        "currency": "HKD",
+        "approval_status": "pending_new",
+        "base_cost": "2023.00",
+        "base_cost_source": "stockx",
+        "base_cost_at": "2026-08-23T21:00:00.000Z",
+        "margin_percent": "12.0000",
+        "margin_fixed": "200.00",
+        "margin_source": "group",
+        "margin_override_percent": null,
+        "margin_override_fixed": null,
+        "raw_price": "2465.76",
+        "rounding_applied": true,
+        "approved_price": null,
+        "approved_at": null,
+        "previous_approved_price": null,
+        "previous_approved_at": null,
+        "pending_price": "2499.00",
+        "pending_since": "2026-08-23T17:00:00.000Z",
+        "pending_update_id": "eaab4778-9f6a-4bd1-85bb-c14bba307d05",
+        "in_house_markup": null,
+        "sources": [
+          {
+            "source": "stockx",
+            "cost": "2023.00",
+            "cost_at": "2026-08-23T21:00:00.000Z",
+            "previous_cost": "2004.00",
+            "previous_cost_at": "2026-08-22T21:00:00.000Z",
+            "quantity": 1,
+            "last_source_ref": "stockx:DZ5485-106:US7",
+            "last_synced_at": "2026-08-23T21:00:00.000Z",
+            "editable": false
+          }
+        ],
+        "updated_at": "2026-08-20T15:00:00.000Z"
+      },
+      {
+        "id": "ee1b0b2d-084c-4856-b8b7-b958b488831d",
+        "product_sku": "DZ5485-106",
+        "product_name": "Air Jordan 1 Retro High OG SP Palomino",
+        "name_zh": "Air Jordan 1 高筒復古 OG SP 淺棕",
+        "size": "US 7.5",
+        "currency": "HKD",
+        "approval_status": "approved",
+        "base_cost": "1825.00",
+        "base_cost_source": "stockx",
+        "base_cost_at": "2026-08-23T04:00:00.000Z",
+        "margin_percent": "12.0000",
+        "margin_fixed": "200.00",
+        "margin_source": "group",
+        "margin_override_percent": null,
+        "margin_override_fixed": null,
+        "raw_price": "2244.00",
+        "rounding_applied": true,
+        "approved_price": "2249.00",
+        "approved_at": "2026-08-13T00:00:00.000Z",
+        "previous_approved_price": "2199.00",
+        "previous_approved_at": "2026-07-31T13:00:00.000Z",
+        "pending_price": null,
+        "pending_since": null,
+        "pending_update_id": null,
+        "in_house_markup": null,
+        "sources": [
+          {
+            "source": "stockx",
+            "cost": "1825.00",
+            "cost_at": "2026-08-23T04:00:00.000Z",
+            "previous_cost": "1834.00",
+            "previous_cost_at": "2026-08-22T04:00:00.000Z",
+            "quantity": 1,
+            "last_source_ref": "stockx:DZ5485-106:US7.5",
+            "last_synced_at": "2026-08-23T04:00:00.000Z",
+            "editable": false
+          }
+        ],
+        "updated_at": "2026-08-23T21:00:00.000Z"
+      },
+      {
+        "id": "b5ed2a19-6304-4131-a3be-c8dfa1a4ae09",
+        "product_sku": "DZ5485-106",
+        "product_name": "Air Jordan 1 Retro High OG SP Palomino",
+        "name_zh": "Air Jordan 1 高筒復古 OG SP 淺棕",
+        "size": "US 8",
+        "currency": "HKD",
+        "approval_status": "pending_price",
+        "base_cost": "1705.00",
+        "base_cost_source": "stockx",
+        "base_cost_at": "2026-08-23T15:00:00.000Z",
+        "margin_percent": "22.0000",
+        "margin_fixed": "0.00",
+        "margin_source": "override",
+        "margin_override_percent": "22.0000",
+        "margin_override_fixed": "0.00",
+        "raw_price": "2080.10",
+        "rounding_applied": true,
+        "approved_price": "2399.00",
+        "approved_at": "2026-08-15T10:00:00.000Z",
+        "previous_approved_price": null,
+        "previous_approved_at": null,
+        "pending_price": "2099.00",
+        "pending_since": "2026-08-23T18:00:00.000Z",
+        "pending_update_id": "653519da-ad9c-4aba-a68a-5db78eb32f17",
+        "in_house_markup": {
+          "amount": "823.00",
+          "percent": "52.2208"
+        },
+        "sources": [
+          {
+            "source": "stockx",
+            "cost": "1705.00",
+            "cost_at": "2026-08-23T15:00:00.000Z",
+            "previous_cost": "1698.00",
+            "previous_cost_at": "2026-08-22T15:00:00.000Z",
+            "quantity": 1,
+            "last_source_ref": "stockx:DZ5485-106:US8",
+            "last_synced_at": "2026-08-23T15:00:00.000Z",
+            "editable": false
+          },
+          {
+            "source": "in_house",
+            "cost": "1576.00",
+            "cost_at": "2026-08-21T01:00:00.000Z",
+            "previous_cost": null,
+            "previous_cost_at": null,
+            "quantity": 4,
+            "last_source_ref": "sheet:row:99",
+            "last_synced_at": "2026-08-24T01:00:00.000Z",
+            "editable": true
+          }
+        ],
+        "updated_at": "2026-08-22T23:00:00.000Z"
+      },
+      {
+        "id": "a8f571f0-2724-405d-bee0-fa5d9aee2ed7",
+        "product_sku": "DZ5485-106",
+        "product_name": "Air Jordan 1 Retro High OG SP Palomino",
+        "name_zh": "Air Jordan 1 高筒復古 OG SP 淺棕",
+        "size": "US 8.5",
+        "currency": "HKD",
+        "approval_status": "approved",
+        "base_cost": "1851.00",
+        "base_cost_source": "stockx",
+        "base_cost_at": "2026-08-23T10:00:00.000Z",
+        "margin_percent": "10.0000",
+        "margin_fixed": "50.00",
+        "margin_source": "override",
+        "margin_override_percent": "10.0000",
+        "margin_override_fixed": "50.00",
+        "raw_price": "2086.10",
+        "rounding_applied": true,
+        "approved_price": "2099.00",
+        "approved_at": "2026-08-12T14:00:00.000Z",
+        "previous_approved_price": null,
+        "previous_approved_at": null,
+        "pending_price": null,
+        "pending_since": null,
+        "pending_update_id": null,
+        "in_house_markup": null,
+        "sources": [
+          {
+            "source": "stockx",
+            "cost": "1851.00",
+            "cost_at": "2026-08-23T10:00:00.000Z",
+            "previous_cost": null,
+            "previous_cost_at": null,
+            "quantity": 1,
+            "last_source_ref": "stockx:DZ5485-106:US8.5",
+            "last_synced_at": "2026-08-23T10:00:00.000Z",
+            "editable": false
+          }
+        ],
+        "updated_at": "2026-08-23T16:00:00.000Z"
+      },
+      {
+        "id": "0f7b51fd-a320-45e2-8f35-091b6bbf60f6",
+        "product_sku": "DZ5485-106",
+        "product_name": "Air Jordan 1 Retro High OG SP Palomino",
+        "name_zh": "Air Jordan 1 高筒復古 OG SP 淺棕",
+        "size": "US 9",
+        "currency": "HKD",
+        "approval_status": "pending_price",
+        "base_cost": "1698.00",
+        "base_cost_source": "stockx",
+        "base_cost_at": "2026-08-23T21:00:00.000Z",
+        "margin_percent": "15.0000",
+        "margin_fixed": "0.00",
+        "margin_source": "override",
+        "margin_override_percent": "15.0000",
+        "margin_override_fixed": "0.00",
+        "raw_price": "1952.70",
+        "rounding_applied": true,
+        "approved_price": "1649.00",
+        "approved_at": "2026-08-14T03:00:00.000Z",
+        "previous_approved_price": null,
+        "previous_approved_at": null,
+        "pending_price": "1999.00",
+        "pending_since": "2026-08-22T11:00:00.000Z",
+        "pending_update_id": "7fea6bfb-f749-4dcc-82ad-5862ab5cb3b6",
+        "in_house_markup": null,
+        "sources": [
+          {
+            "source": "stockx",
+            "cost": "1698.00",
+            "cost_at": "2026-08-23T21:00:00.000Z",
+            "previous_cost": "1715.00",
+            "previous_cost_at": "2026-08-22T21:00:00.000Z",
+            "quantity": 1,
+            "last_source_ref": "stockx:DZ5485-106:US9",
+            "last_synced_at": "2026-08-23T21:00:00.000Z",
+            "editable": false
+          }
+        ],
+        "updated_at": "2026-08-21T17:00:00.000Z"
+      },
+      {
+        "id": "8d436045-8000-4fb6-9d99-2a56e1d6f28c",
+        "product_sku": "DZ5485-106",
+        "product_name": "Air Jordan 1 Retro High OG SP Palomino",
+        "name_zh": "Air Jordan 1 高筒復古 OG SP 淺棕",
+        "size": "US 9.5",
+        "currency": "HKD",
+        "approval_status": "pending_price",
+        "base_cost": "1943.00",
+        "base_cost_source": "stockx",
+        "base_cost_at": "2026-08-23T13:00:00.000Z",
+        "margin_percent": "12.0000",
+        "margin_fixed": "200.00",
+        "margin_source": "group",
+        "margin_override_percent": null,
+        "margin_override_fixed": null,
+        "raw_price": "2376.16",
+        "rounding_applied": true,
+        "approved_price": "1849.00",
+        "approved_at": "2026-08-15T08:00:00.000Z",
+        "previous_approved_price": null,
+        "previous_approved_at": null,
+        "pending_price": "2399.00",
+        "pending_since": "2026-08-23T16:00:00.000Z",
+        "pending_update_id": "e08d3ae0-979e-431e-92e0-4cf04cc731c6",
+        "in_house_markup": {
+          "amount": "6.00",
+          "percent": "0.3256"
+        },
+        "sources": [
+          {
+            "source": "stockx",
+            "cost": "1943.00",
+            "cost_at": "2026-08-23T13:00:00.000Z",
+            "previous_cost": "1990.00",
+            "previous_cost_at": "2026-08-22T13:00:00.000Z",
+            "quantity": 1,
+            "last_source_ref": "stockx:DZ5485-106:US9.5",
+            "last_synced_at": "2026-08-23T13:00:00.000Z",
+            "editable": false
+          },
+          {
+            "source": "in_house",
+            "cost": "1843.00",
+            "cost_at": "2026-08-21T02:00:00.000Z",
+            "previous_cost": null,
+            "previous_cost_at": null,
+            "quantity": 0,
+            "last_source_ref": "sheet:row:362",
+            "last_synced_at": "2026-08-23T19:00:00.000Z",
+            "editable": true
+          }
+        ],
+        "updated_at": "2026-08-21T12:00:00.000Z"
+      },
+      {
+        "id": "77a62f47-9b02-4a32-82b1-212337a686bf",
+        "product_sku": "DZ5485-106",
+        "product_name": "Air Jordan 1 Retro High OG SP Palomino",
+        "name_zh": "Air Jordan 1 高筒復古 OG SP 淺棕",
+        "size": "US 10",
+        "currency": "HKD",
+        "approval_status": "approved",
+        "base_cost": "1753.00",
+        "base_cost_source": "stockx",
+        "base_cost_at": "2026-08-23T04:00:00.000Z",
+        "margin_percent": "12.0000",
+        "margin_fixed": "200.00",
+        "margin_source": "group",
+        "margin_override_percent": null,
+        "margin_override_fixed": null,
+        "raw_price": "2163.36",
+        "rounding_applied": true,
+        "approved_price": "2199.00",
+        "approved_at": "2026-08-19T23:00:00.000Z",
+        "previous_approved_price": "2149.00",
+        "previous_approved_at": "2026-08-11T04:00:00.000Z",
+        "pending_price": null,
+        "pending_since": null,
+        "pending_update_id": null,
+        "in_house_markup": null,
+        "sources": [
+          {
+            "source": "stockx",
+            "cost": "1753.00",
+            "cost_at": "2026-08-23T04:00:00.000Z",
+            "previous_cost": "1671.00",
+            "previous_cost_at": "2026-08-22T04:00:00.000Z",
+            "quantity": 1,
+            "last_source_ref": "stockx:DZ5485-106:US10",
+            "last_synced_at": "2026-08-23T04:00:00.000Z",
+            "editable": false
+          },
+          {
+            "source": "in_house",
+            "cost": null,
+            "cost_at": null,
+            "previous_cost": null,
+            "previous_cost_at": null,
+            "quantity": 4,
+            "last_source_ref": "sheet:row:136",
+            "last_synced_at": "2026-08-23T22:00:00.000Z",
+            "editable": true
+          }
+        ],
+        "updated_at": "2026-08-24T00:00:00.000Z"
+      },
+      {
+        "id": "620caa56-ff94-4fe6-927e-86ce474754d3",
+        "product_sku": "DZ5485-106",
+        "product_name": "Air Jordan 1 Retro High OG SP Palomino",
+        "name_zh": "Air Jordan 1 高筒復古 OG SP 淺棕",
+        "size": "US 10.5",
+        "currency": "HKD",
+        "approval_status": "needs_margins",
+        "base_cost": "1967.00",
+        "base_cost_source": "stockx",
+        "base_cost_at": "2026-08-22T13:00:00.000Z",
+        "margin_percent": null,
+        "margin_fixed": null,
+        "margin_source": null,
+        "margin_override_percent": null,
+        "margin_override_fixed": null,
+        "raw_price": null,
+        "rounding_applied": false,
+        "approved_price": null,
+        "approved_at": null,
+        "previous_approved_price": null,
+        "previous_approved_at": null,
+        "pending_price": null,
+        "pending_since": null,
+        "pending_update_id": null,
+        "in_house_markup": null,
+        "sources": [
+          {
+            "source": "stockx",
+            "cost": "1967.00",
+            "cost_at": "2026-08-22T13:00:00.000Z",
+            "previous_cost": "1898.00",
+            "previous_cost_at": "2026-08-21T13:00:00.000Z",
+            "quantity": 1,
+            "last_source_ref": "stockx:DZ5485-106:US10.5",
+            "last_synced_at": "2026-08-22T13:00:00.000Z",
+            "editable": false
+          },
+          {
+            "source": "in_house",
+            "cost": "1950.00",
+            "cost_at": "2026-08-20T01:00:00.000Z",
+            "previous_cost": null,
+            "previous_cost_at": null,
+            "quantity": 3,
+            "last_source_ref": "sheet:row:295",
+            "last_synced_at": "2026-08-23T13:00:00.000Z",
+            "editable": true
+          }
+        ],
+        "updated_at": "2026-08-23T07:00:00.000Z"
+      }
+    ],
+    "aggregates": {
+      "size_count": 8,
+      "in_stock_size_count": 3,
+      "total_in_house_quantity": 11,
+      "cost": {
+        "min": "1698.00",
+        "max": "2023.00"
+      },
+      "price": {
+        "min": "1649.00",
+        "max": "2399.00"
+      },
+      "margin_percent": {
+        "min": "10.0000",
+        "max": "22.0000"
+      },
+      "margin_fixed": {
+        "min": "0.00",
+        "max": "200.00"
+      },
+      "margin_source_mix": {
+        "override": 3,
+        "group": 4,
+        "default": 0,
+        "none": 1
+      },
+      "override_count": 3,
+      "has_size_variance": true,
+      "source_count": 2
+    },
+    "margin_summary": {
+      "kind": "mixed",
+      "percent": null,
+      "fixed": null,
+      "percent_range": {
+        "min": "10.0000",
+        "max": "22.0000"
+      },
+      "fixed_range": {
+        "min": "0.00",
+        "max": "200.00"
+      }
+    },
+    "last_imported_at": "2026-08-19T13:00:00.000Z",
+    "updated_at": "2026-08-23T18:00:00.000Z",
+    "created_at": "2026-04-04T02:00:00.000Z"
+  }
+}

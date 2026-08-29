@@ -1,0 +1,346 @@
+{
+  "data": {
+    "id": "66530b0f-8f32-40f8-b60b-5ee5eb2c300b",
+    "kind": "group_apply",
+    "scope_key": "36250586-180d-4a0c-b13b-8428a27efceb",
+    "status": "running",
+    "total": 32,
+    "done": 14,
+    "ok_count": 14,
+    "failed_count": 0,
+    "created_at": "2026-08-24T02:00:00.000Z",
+    "started_at": "2026-08-24T02:00:00.000Z",
+    "finished_at": null,
+    "last_error": null,
+    "result": null,
+    "items": [
+      {
+        "id": "a1b9b819-5083-45c1-8db3-048c4afd4c83",
+        "listing_id": "cfa7b43b-b5e0-4116-bb04-b49bd025bb69",
+        "product_sku": "DD1391-100",
+        "size": "US 7",
+        "status": "succeeded",
+        "reason": null,
+        "attempts": 1,
+        "updated_at": "2026-08-24T02:00:00.000Z"
+      },
+      {
+        "id": "caceba5a-eb8e-4aa2-b11f-c09a3b1531e0",
+        "listing_id": "8fea22f1-3974-481f-a698-0e72bad7b6c4",
+        "product_sku": "DD1391-100",
+        "size": "US 7.5",
+        "status": "succeeded",
+        "reason": null,
+        "attempts": 1,
+        "updated_at": "2026-08-24T02:00:00.000Z"
+      },
+      {
+        "id": "eaffa132-76e7-43b2-9118-99f92bedd4b2",
+        "listing_id": "158e9134-4a62-47ec-b57b-da3c3396c6f7",
+        "product_sku": "DD1391-100",
+        "size": "US 8",
+        "status": "succeeded",
+        "reason": null,
+        "attempts": 1,
+        "updated_at": "2026-08-24T02:00:00.000Z"
+      },
+      {
+        "id": "60298c23-2957-4b73-b51c-edf184fb36a9",
+        "listing_id": "b6424345-306d-4834-ad84-0329d79e98a1",
+        "product_sku": "DD1391-100",
+        "size": "US 8.5",
+        "status": "succeeded",
+        "reason": null,
+        "attempts": 1,
+        "updated_at": "2026-08-24T02:00:00.000Z"
+      },
+      {
+        "id": "aab6ac0c-aedb-455e-86a4-84c1752904f9",
+        "listing_id": "d4a1d88b-f188-4df2-acad-9f48fea6759c",
+        "product_sku": "DD1391-100",
+        "size": "US 9",
+        "status": "succeeded",
+        "reason": null,
+        "attempts": 1,
+        "updated_at": "2026-08-24T02:00:00.000Z"
+      },
+      {
+        "id": "bcdc45f4-cddc-4b94-aef0-d18396e5d51f",
+        "listing_id": "9baa0099-4611-49ff-acf1-4707cfb1cc1b",
+        "product_sku": "DD1391-100",
+        "size": "US 9.5",
+        "status": "succeeded",
+        "reason": null,
+        "attempts": 1,
+        "updated_at": "2026-08-24T02:00:00.000Z"
+      },
+      {
+        "id": "3bd008cb-4d2d-4fe0-9b75-1e8e33a54edd",
+        "listing_id": "0ee0d1fc-d001-4f2b-815e-20f7dc559a60",
+        "product_sku": "DD1391-100",
+        "size": "US 10",
+        "status": "succeeded",
+        "reason": null,
+        "attempts": 1,
+        "updated_at": "2026-08-24T02:00:00.000Z"
+      },
+      {
+        "id": "24f3a96c-507d-4f10-8e1e-6fe71a78278b",
+        "listing_id": "44c52a3e-9b14-4de5-88a7-ab7bf04a15c4",
+        "product_sku": "DD1391-103",
+        "size": "US 7",
+        "status": "succeeded",
+        "reason": null,
+        "attempts": 1,
+        "updated_at": "2026-08-24T02:00:00.000Z"
+      },
+      {
+        "id": "0d59bc7a-8df8-483f-ab4a-629357d06dc7",
+        "listing_id": "8a33fe96-dd47-4998-a274-254f48e7341c",
+        "product_sku": "DD1391-103",
+        "size": "US 7.5",
+        "status": "succeeded",
+        "reason": null,
+        "attempts": 1,
+        "updated_at": "2026-08-24T02:00:00.000Z"
+      },
+      {
+        "id": "a24b18e7-56ad-4785-b9d3-d47baf6823b0",
+        "listing_id": "4c98e3bb-e54f-4766-a725-70660e732728",
+        "product_sku": "DD1391-103",
+        "size": "US 8",
+        "status": "succeeded",
+        "reason": null,
+        "attempts": 1,
+        "updated_at": "2026-08-24T02:00:00.000Z"
+      },
+      {
+        "id": "dbf5a041-2ea5-405a-acc1-51712c07bd32",
+        "listing_id": "574718a8-d53d-4298-9a4c-7a3dd8038b6f",
+        "product_sku": "DD1391-103",
+        "size": "US 8.5",
+        "status": "succeeded",
+        "reason": null,
+        "attempts": 1,
+        "updated_at": "2026-08-24T02:00:00.000Z"
+      },
+      {
+        "id": "e48b5fa0-dbcb-43e5-bb4c-9378d55e16cc",
+        "listing_id": "5c83eced-59f6-451e-a2b5-f888dda11553",
+        "product_sku": "DD1391-103",
+        "size": "US 9",
+        "status": "succeeded",
+        "reason": null,
+        "attempts": 1,
+        "updated_at": "2026-08-24T02:00:00.000Z"
+      },
+      {
+        "id": "22ac33ee-f7eb-4d74-8c91-3c25ab404924",
+        "listing_id": "2e02a089-fc5b-4f1c-8bf6-ebd16003188e",
+        "product_sku": "DD1391-103",
+        "size": "US 9.5",
+        "status": "succeeded",
+        "reason": null,
+        "attempts": 1,
+        "updated_at": "2026-08-24T02:00:00.000Z"
+      },
+      {
+        "id": "4053bc52-922d-4f4a-8f63-8d62c9278aa8",
+        "listing_id": "3f94dd22-fab2-4bed-bf3e-97f59a350825",
+        "product_sku": "DD1391-103",
+        "size": "US 10",
+        "status": "succeeded",
+        "reason": null,
+        "attempts": 1,
+        "updated_at": "2026-08-24T02:00:00.000Z"
+      },
+      {
+        "id": "b3787ea9-44d5-4c9d-a64d-6cec88a313b5",
+        "listing_id": "1d871175-3f6d-4367-8648-30ef70d9064d",
+        "product_sku": "DD1391-103",
+        "size": "US 10.5",
+        "status": "queued",
+        "reason": null,
+        "attempts": 0,
+        "updated_at": "2026-08-24T02:00:00.000Z"
+      },
+      {
+        "id": "f391f87f-fadc-4dd4-b5dd-b32c9324f051",
+        "listing_id": "204922b7-5877-48ae-ba56-f646857b5d0b",
+        "product_sku": "DD1391-106",
+        "size": "US 7",
+        "status": "queued",
+        "reason": null,
+        "attempts": 0,
+        "updated_at": "2026-08-24T02:00:00.000Z"
+      },
+      {
+        "id": "ac798469-3f6b-4a0e-bc9f-d530805ba096",
+        "listing_id": "3b63be47-0bc4-4c9c-9c7c-7a98d37f100e",
+        "product_sku": "DD1391-106",
+        "size": "US 7.5",
+        "status": "queued",
+        "reason": null,
+        "attempts": 0,
+        "updated_at": "2026-08-24T02:00:00.000Z"
+      },
+      {
+        "id": "c005df68-3178-422a-ab89-8ee2b32049a2",
+        "listing_id": "43493250-6f65-4102-a2fd-45c6ca7f6d78",
+        "product_sku": "DD1391-106",
+        "size": "US 8",
+        "status": "queued",
+        "reason": null,
+        "attempts": 0,
+        "updated_at": "2026-08-24T02:00:00.000Z"
+      },
+      {
+        "id": "b5a96ce8-cf3c-4117-a452-793d3479dfa2",
+        "listing_id": "f11506d7-bdde-4e95-a4b6-b8d0709013fe",
+        "product_sku": "DD1391-106",
+        "size": "US 8.5",
+        "status": "queued",
+        "reason": null,
+        "attempts": 0,
+        "updated_at": "2026-08-24T02:00:00.000Z"
+      },
+      {
+        "id": "b86bea67-ffc0-488d-9139-183ec6d486a2",
+        "listing_id": "0aaa2b25-4ac7-4c98-a90a-b7f5ace00d02",
+        "product_sku": "DD1391-106",
+        "size": "US 9",
+        "status": "queued",
+        "reason": null,
+        "attempts": 0,
+        "updated_at": "2026-08-24T02:00:00.000Z"
+      },
+      {
+        "id": "5b9a5caa-ffb3-4eab-9e9f-b88b4da1ed18",
+        "listing_id": "0521a364-4be3-41c4-a50c-f0169891bd37",
+        "product_sku": "DD1391-106",
+        "size": "US 9.5",
+        "status": "queued",
+        "reason": null,
+        "attempts": 0,
+        "updated_at": "2026-08-24T02:00:00.000Z"
+      },
+      {
+        "id": "9616916c-2e9f-4dd3-bd0e-32c7d80a79de",
+        "listing_id": "3c4a850a-f8ba-448e-ba81-d066ad705f2d",
+        "product_sku": "DD1391-106",
+        "size": "US 10",
+        "status": "queued",
+        "reason": null,
+        "attempts": 0,
+        "updated_at": "2026-08-24T02:00:00.000Z"
+      },
+      {
+        "id": "56e8ba6f-61cd-4223-8b30-376a0a1c695d",
+        "listing_id": "b3e67e2f-5e60-4ff1-b41a-f382df132de7",
+        "product_sku": "DD1391-106",
+        "size": "US 10.5",
+        "status": "queued",
+        "reason": null,
+        "attempts": 0,
+        "updated_at": "2026-08-24T02:00:00.000Z"
+      },
+      {
+        "id": "1ca0feb8-733a-4631-be86-c3ad7ab85527",
+        "listing_id": "aecf6aa0-5ae6-4844-936b-91e4a453757c",
+        "product_sku": "DD1391-109",
+        "size": "US 7",
+        "status": "queued",
+        "reason": null,
+        "attempts": 0,
+        "updated_at": "2026-08-24T02:00:00.000Z"
+      },
+      {
+        "id": "433ec579-7d56-41da-ae0f-15cf853d0ff5",
+        "listing_id": "4530bf22-bcef-4f53-9c0a-af411ea3cbcb",
+        "product_sku": "DD1391-109",
+        "size": "US 7.5",
+        "status": "queued",
+        "reason": null,
+        "attempts": 0,
+        "updated_at": "2026-08-24T02:00:00.000Z"
+      },
+      {
+        "id": "1502c2ee-de05-4822-9870-89164f68ad8b",
+        "listing_id": "2242fab4-32c5-42c8-a3da-0048e9a2679d",
+        "product_sku": "DD1391-109",
+        "size": "US 8",
+        "status": "queued",
+        "reason": null,
+        "attempts": 0,
+        "updated_at": "2026-08-24T02:00:00.000Z"
+      },
+      {
+        "id": "c169213e-45f3-435a-9fa4-fca67c5ed52d",
+        "listing_id": "ab3c23b2-8a69-457b-844e-f88788a5ac1b",
+        "product_sku": "DD1391-109",
+        "size": "US 8.5",
+        "status": "queued",
+        "reason": null,
+        "attempts": 0,
+        "updated_at": "2026-08-24T02:00:00.000Z"
+      },
+      {
+        "id": "0cfe8fd8-9226-4466-954c-bb4f3b7fc1dd",
+        "listing_id": "9e437bc3-5366-4c15-8db4-23dfd6316130",
+        "product_sku": "DD1391-109",
+        "size": "US 9",
+        "status": "queued",
+        "reason": null,
+        "attempts": 0,
+        "updated_at": "2026-08-24T02:00:00.000Z"
+      },
+      {
+        "id": "7fee375f-ffd0-4b56-82eb-827d862ac47c",
+        "listing_id": "36729528-49c3-45ce-abe7-5e83c4ac8503",
+        "product_sku": "DV0833-100",
+        "size": "US 7",
+        "status": "queued",
+        "reason": null,
+        "attempts": 0,
+        "updated_at": "2026-08-24T02:00:00.000Z"
+      },
+      {
+        "id": "416f8ef7-2682-4da4-b0b1-7e8cc413bd37",
+        "listing_id": "df93b0c9-db1b-49be-bad7-593d823c2a88",
+        "product_sku": "DV0833-100",
+        "size": "US 7.5",
+        "status": "queued",
+        "reason": null,
+        "attempts": 0,
+        "updated_at": "2026-08-24T02:00:00.000Z"
+      },
+      {
+        "id": "36ae846c-d5c5-4886-a904-f3e9d370f8a6",
+        "listing_id": "48c00aeb-88b9-4563-9631-51fbe76c6a35",
+        "product_sku": "DV0833-100",
+        "size": "US 8",
+        "status": "queued",
+        "reason": null,
+        "attempts": 0,
+        "updated_at": "2026-08-24T02:00:00.000Z"
+      },
+      {
+        "id": "277ffb1d-2f7e-45d5-a23f-6c65f1beb636",
+        "listing_id": "070d6dcc-7152-4df5-9b6f-228c987084d9",
+        "product_sku": "DV0833-100",
+        "size": "US 8.5",
+        "status": "queued",
+        "reason": null,
+        "attempts": 0,
+        "updated_at": "2026-08-24T02:00:00.000Z"
+      }
+    ]
+  },
+  "meta": {
+    "worker": {
+      "heartbeat_at": "2026-08-24T02:00:00.000Z",
+      "instance": "mock-worker-1",
+      "stale": true
+    }
+  }
+}

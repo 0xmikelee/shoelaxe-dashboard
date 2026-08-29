@@ -1,0 +1,41 @@
+{
+  "data": [
+    {
+      "update_id": "0e424651-3552-49cb-97a2-edaa75ebfa8b",
+      "listing_id": "b6424345-306d-4834-ad84-0329d79e98a1",
+      "product_sku": "DD1391-100",
+      "product_name": "Dunk Low Retro Panda",
+      "name_zh": "Dunk Low 復古 黑白熊貓",
+      "size": "US 8.5",
+      "source": "stockx",
+      "cost": "875.00",
+      "previous_cost": "844.00",
+      "previous_cost_at": "2026-08-22T11:00:00.000Z",
+      "approved_price": "1049.00",
+      "new_price": "1249.00",
+      "raw_price": "1248.50",
+      "rounding_applied": true,
+      "delta_percent": "19.1",
+      "delta_percent_exact": "19.0658",
+      "delta_direction": "up",
+      "threshold_up_percent": "10.0000",
+      "threshold_down_percent": "8.0000",
+      "status": "superseded",
+      "approval_status": "pending_price",
+      "outcome": "superseded",
+      "engine": "v2",
+      "pending_since": "2026-08-20T18:00:00.000Z",
+      "observed_at": "2026-08-23T11:00:00.000Z",
+      "created_at": "2026-08-12T15:00:00.000Z"
+    }
+  ],
+  "meta": {
+    "total": 1,
+    "page": 1,
+    "per_page": 20,
+    "total_pages": 1,
+    "publishing": {
+      "enabled": false
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "data": {
+    "id": "1b92ce4d-4b96-44b1-9317-543019df8fb4",
+    "kind": "group_rule_recompute",
+    "scope_key": "8ca75c82-d7e9-426d-ab4d-b2ccbfee5893",
+    "status": "queued",
+    "total": 32,
+    "done": 0,
+    "ok_count": 0,
+    "failed_count": 0,
+    "created_at": "2026-08-24T01:59:40.000Z",
+    "started_at": null,
+    "finished_at": null,
+    "last_error": null,
+    "result": null,
+    "items": []
+  },
+  "meta": {
+    "worker": {
+      "heartbeat_at": "2026-08-24T02:00:00.000Z",
+      "instance": "mock-worker-1",
+      "stale": false
+    }
+  }
+}
