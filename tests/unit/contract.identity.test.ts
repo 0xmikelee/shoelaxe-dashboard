@@ -1,7 +1,10 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, beforeAll } from "vitest";
 import { z, type ZodType } from "zod";
 import { WIRE_SCHEMAS } from "@/lib/schemas/wire";
 import { PROVISIONAL } from "@/lib/api/contract";
+import { allRoutes, registerProvisional } from "@/lib/openapi/registry";
+import "@/app/api/ingest/route";
+import "@/app/api/ingest/health/route";
 
 const shared = new Set<unknown>(Object.values(WIRE_SCHEMAS));
 
@@ -9,9 +12,6 @@ const shared = new Set<unknown>(Object.values(WIRE_SCHEMAS));
  * The teeth of the shared-contract design. A route may only respond with a schema from
  * lib/schemas/wire — reference-identical, not merely structurally similar — so an inline
  * z.object({...}) written at a route cannot drift from what the frontend generated its types from.
- *
- * Today this covers the provisional contract. When real routes land, extend it to walk
- * allRoutes() after importing app/api/**\/route.ts, exactly as scripts/build-openapi.ts does.
  */
 describe("response schemas are shared, not inlined", () => {
   it.each(PROVISIONAL.filter((d) => d.response).map((d) => [d.operationId, d] as const))(
@@ -22,11 +22,34 @@ describe("response schemas are shared, not inlined", () => {
   );
 });
 
-/**
- * scripts/build-openapi.ts converts with `unrepresentable: "throw"`, so a z.date(), a bigint or a
- * transform on the output side fails the build. Catching it here names the offending schema instead
- * of failing a generator run with a stack trace, and it fails in `pnpm test` rather than in CI.
- */
+describe("implemented routes share wire schemas", () => {
+  beforeAll(() => {
+    for (const doc of PROVISIONAL) registerProvisional(doc);
+  });
+
+  it("registers the ingest machine routes as real, not provisional", () => {
+    const ingest = allRoutes().filter((r) => r.path.startsWith("/api/ingest"));
+    expect(ingest.map((r) => r.operationId).sort()).toEqual(["ingestBatch", "ingestHealth"]);
+    expect(ingest.every((r) => r.provisional !== true)).toBe(true);
+  });
+
+  it("responds with a schema from lib/schemas/wire", () => {
+    for (const doc of allRoutes().filter((d) => !d.provisional && d.response)) {
+      expect(shared.has(doc.response), doc.operationId).toBe(true);
+    }
+  });
+
+  it("converts implemented request schemas on the input side", () => {
+    for (const doc of allRoutes().filter((d) => !d.provisional)) {
+      for (const part of ["body", "query", "params"] as const) {
+        const schema = doc.request?.[part];
+        if (!schema) continue;
+        expect(() => representable(schema, "input"), `${doc.operationId}.${part}`).not.toThrow();
+      }
+    }
+  });
+});
+
 const representable = (schema: ZodType, io: "input" | "output") =>
   z.toJSONSchema(schema, { io, unrepresentable: "throw", target: "draft-2020-12" });
 

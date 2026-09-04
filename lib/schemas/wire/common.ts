@@ -148,6 +148,8 @@ export const PriceUpdateOutcome = z.enum([
   "needs_margins",
   "unknown_sku",
   "invalid_currency",
+  "missing_cost",
+  "invalid_size",
 ]);
 
 /** Five of the outcome values above mean different things per era. Never read one without the other. */

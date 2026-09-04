@@ -43,7 +43,9 @@ export type Outcome =
   | "superseded"
   | "needs_margins"
   | "unknown_sku"
-  | "invalid_currency";
+  | "invalid_currency"
+  | "missing_cost"
+  | "invalid_size";
 
 export type PriceHistoryChangeType =
   | "cost"

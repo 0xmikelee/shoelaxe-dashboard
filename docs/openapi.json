@@ -119,6 +119,540 @@
     }
   },
   "paths": {
+    "/api/ingest": {
+      "post": {
+        "operationId": "ingestBatch",
+        "summary": "Synchronous per-item ingest from StockX email and Google Sheet",
+        "description": "Machine ingest. The payload is identity + cost/quantity only: the Google Sheet no longer sends image URLs or margins. Margins are resolved server-side (listing override → group → system default). Item failures surface as per-item outcomes inside a 200; the batch continues.\n\nEach item runs in its own transaction. Shopify is enqueued, never called inline. After those transactions commit, unique SKUs are looked up on KicksDB GOAT (`GET /v3/goat/products?query=SKU`) and catalog fields plus `images[]` URLs are saved.\n\n**Consumed by:** machine: Apps Script (GmailStockX.gs, SheetUpdater.gs)\n\n**Idempotency:** Per item on (source, source_ref). Replay returns the stored result with idempotent: true.\n\n**Side effects:** price_updates; price_history on real change; audit_log; shopify_sync_jobs (deferred while PUBLISH_TARGET=none); crawl_runs; products catalog from KicksDB GOAT (after item txs; skipped when KICKSDB_API_KEY is unset); media.product_images from KicksDB images[] (source kicksdb)",
+        "tags": [
+          "machine"
+        ],
+        "security": [
+          {
+            "ingestKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "$schema": "https://json-schema.org/draft/2020-12/schema",
+                      "type": "object",
+                      "properties": {
+                        "run_id": {
+                          "type": "string"
+                        },
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "source_ref": {
+                                "type": "string"
+                              },
+                              "ok": {
+                                "type": "boolean"
+                              },
+                              "status": {
+                                "type": "string",
+                                "enum": [
+                                  "pending",
+                                  "applied",
+                                  "skipped",
+                                  "rejected",
+                                  "error"
+                                ]
+                              },
+                              "outcome": {
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "enum": [
+                                      "new_listing",
+                                      "price_change",
+                                      "quantity_change",
+                                      "no_change",
+                                      "error",
+                                      "cost_change",
+                                      "margin_change",
+                                      "listing_price_change",
+                                      "held_for_approval",
+                                      "auto_approved",
+                                      "superseded",
+                                      "needs_margins",
+                                      "unknown_sku",
+                                      "invalid_currency",
+                                      "missing_cost",
+                                      "invalid_size"
+                                    ]
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "error": {
+                                "anyOf": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "listing_id": {
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "idempotent": {
+                                "type": "boolean"
+                              }
+                            },
+                            "required": [
+                              "source_ref",
+                              "ok",
+                              "status",
+                              "outcome",
+                              "error",
+                              "listing_id",
+                              "idempotent"
+                            ],
+                            "additionalProperties": false
+                          }
+                        }
+                      },
+                      "required": [
+                        "run_id",
+                        "items"
+                      ],
+                      "additionalProperties": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "`invalid_json`, `validation_failed`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                },
+                "examples": {
+                  "invalid_json": {
+                    "value": {
+                      "error": {
+                        "code": "invalid_json",
+                        "message": "…"
+                      }
+                    }
+                  },
+                  "validation_failed": {
+                    "value": {
+                      "error": {
+                        "code": "validation_failed",
+                        "message": "…"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "`missing_key`, `invalid_key`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                },
+                "examples": {
+                  "missing_key": {
+                    "value": {
+                      "error": {
+                        "code": "missing_key",
+                        "message": "…"
+                      }
+                    }
+                  },
+                  "invalid_key": {
+                    "value": {
+                      "error": {
+                        "code": "invalid_key",
+                        "message": "…"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "`run_mismatch`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                },
+                "examples": {
+                  "run_mismatch": {
+                    "value": {
+                      "error": {
+                        "code": "run_mismatch",
+                        "message": "…"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "`batch_too_large`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                },
+                "examples": {
+                  "batch_too_large": {
+                    "value": {
+                      "error": {
+                        "code": "batch_too_large",
+                        "message": "…"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "`internal_error`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                },
+                "examples": {
+                  "internal_error": {
+                    "value": {
+                      "error": {
+                        "code": "internal_error",
+                        "message": "…"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "`service_unavailable`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                },
+                "examples": {
+                  "service_unavailable": {
+                    "value": {
+                      "error": {
+                        "code": "service_unavailable",
+                        "message": "…"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "run": {
+                    "type": "object",
+                    "properties": {
+                      "run_id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 64
+                      },
+                      "source": {
+                        "type": "string",
+                        "enum": [
+                          "stockx",
+                          "google_sheet"
+                        ]
+                      },
+                      "trigger": {
+                        "type": "string",
+                        "enum": [
+                          "cron",
+                          "manual"
+                        ]
+                      },
+                      "started_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                      }
+                    },
+                    "required": [
+                      "run_id",
+                      "source",
+                      "trigger",
+                      "started_at"
+                    ]
+                  },
+                  "updates": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "product_name": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 200
+                        },
+                        "product_sku": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 64
+                        },
+                        "brand": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 80
+                        },
+                        "size": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 16
+                        },
+                        "cost": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "pattern": "^-?\\d+(\\.\\d{1,2})?$"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "quantity": {
+                          "anyOf": [
+                            {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 9007199254740991
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "currency": {
+                          "default": "HKD",
+                          "type": "string",
+                          "minLength": 3,
+                          "maxLength": 3
+                        },
+                        "source": {
+                          "type": "string",
+                          "enum": [
+                            "stockx",
+                            "google_sheet"
+                          ]
+                        },
+                        "source_ref": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 200
+                        },
+                        "stockx_internal_id": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 80
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "allow_create": {
+                          "default": true,
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [
+                        "product_name",
+                        "product_sku",
+                        "brand",
+                        "size",
+                        "source",
+                        "source_ref"
+                      ]
+                    }
+                  }
+                },
+                "required": [
+                  "run",
+                  "updates"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ingest/health": {
+      "get": {
+        "operationId": "ingestHealth",
+        "summary": "Connection test and batch sizing for Apps Script",
+        "description": "The script reads accepts_max_items at run start so batch size can change server-side without redeploy.\n\n**Consumed by:** machine: Apps Script (testIngestConnection)\n\n**Idempotency:** Safe.",
+        "tags": [
+          "machine"
+        ],
+        "security": [
+          {
+            "ingestKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "$schema": "https://json-schema.org/draft/2020-12/schema",
+                      "type": "object",
+                      "properties": {
+                        "ok": {
+                          "type": "boolean",
+                          "const": true
+                        },
+                        "accepts_max_items": {
+                          "type": "integer",
+                          "exclusiveMinimum": 0,
+                          "maximum": 9007199254740991
+                        }
+                      },
+                      "required": [
+                        "ok",
+                        "accepts_max_items"
+                      ],
+                      "additionalProperties": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "`missing_key`, `invalid_key`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                },
+                "examples": {
+                  "missing_key": {
+                    "value": {
+                      "error": {
+                        "code": "missing_key",
+                        "message": "…"
+                      }
+                    }
+                  },
+                  "invalid_key": {
+                    "value": {
+                      "error": {
+                        "code": "invalid_key",
+                        "message": "…"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "`internal_error`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                },
+                "examples": {
+                  "internal_error": {
+                    "value": {
+                      "error": {
+                        "code": "internal_error",
+                        "message": "…"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "`service_unavailable`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                },
+                "examples": {
+                  "service_unavailable": {
+                    "value": {
+                      "error": {
+                        "code": "service_unavailable",
+                        "message": "…"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/approvals": {
       "get": {
         "operationId": "listApprovals",
@@ -340,7 +874,9 @@
                                   "superseded",
                                   "needs_margins",
                                   "unknown_sku",
-                                  "invalid_currency"
+                                  "invalid_currency",
+                                  "missing_cost",
+                                  "invalid_size"
                                 ]
                               },
                               {

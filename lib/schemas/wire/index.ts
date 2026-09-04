@@ -49,6 +49,7 @@ import {
 import { SettingsUpdateResultWire, SettingsWire, SystemHealthWire } from "./settings";
 import { AllowedUserRemovedWire, AllowedUserWire, AllowedUsersListWire } from "./users";
 import { CrawlRunWire, CrawlStatusWire } from "./crawl";
+import { IngestBatchWire, IngestHealthWire, IngestItemResultWire } from "./ingest";
 
 /**
  * Every response schema the API may return, by name.
@@ -123,6 +124,10 @@ export const WIRE_SCHEMAS = {
 
   CrawlRunWire,
   CrawlStatusWire,
+
+  IngestHealthWire,
+  IngestItemResultWire,
+  IngestBatchWire,
 } satisfies Record<string, ZodType>;
 
 export type WireSchemaName = keyof typeof WIRE_SCHEMAS;

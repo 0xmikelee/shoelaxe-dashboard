@@ -31,6 +31,9 @@ const Env = z.object({
 
   INGEST_SECRET: z.string().min(16),
 
+  // Optional: when unset, ingest still prices; catalog fields stay sheet/StockX identity.
+  KICKSDB_API_KEY: z.string().min(1).optional(),
+
   // Explicit, never absent-credential detection: a lost secret must not degrade silently to
   // "everything skipped, dashboard green".
   PUBLISH_TARGET: z.enum(["none", "shopify"]).default("none"),

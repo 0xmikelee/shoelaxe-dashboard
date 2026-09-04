@@ -41,6 +41,11 @@ export function defineRoute<D extends RouteDoc>(
     const started = Date.now();
 
     try {
+      if (doc.auth === "machine") {
+        const { assertIngestKey } = await import("@/lib/http/machine-auth");
+        assertIngestKey(req);
+      }
+
       let body: unknown;
       if (doc.request?.body) {
         let raw: unknown;

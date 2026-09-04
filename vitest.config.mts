@@ -8,7 +8,12 @@ export default defineConfig({
   test: {
     projects: [
       {
-        resolve: { alias: { "@": root } },
+        resolve: {
+          alias: {
+            "@": root,
+            "server-only": fileURLToPath(new URL("./tests/setup/server-only-stub.ts", import.meta.url)),
+          },
+        },
         test: {
           name: "unit",
           environment: "node",

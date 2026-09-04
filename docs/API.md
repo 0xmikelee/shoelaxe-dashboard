@@ -464,7 +464,9 @@ Full product detail: content, images, every size, aggregates.
 
 **Response `data`:** product detail including `listings[]`, `images[]`, Shopify-oriented content fields
 (`title`, `body_html`, `vendor`, `product_type`, `tags`), `stockx_name` (read-only reference from
-ingest).
+ingest), and catalog fields filled from KicksDB GOAT during ingest: `model`, `description`,
+`colorway`, `season`, `release_date`, `release_date_year`. Image URLs from KicksDB `images[]` appear
+in `images[]` with source `kicksdb` until an operator replaces them from the dashboard.
 
 ---
 
@@ -970,7 +972,7 @@ Connection test and batch sizing for Apps Script.
 
 The script reads `accepts_max_items` at run start so batch size can change server-side without redeploy.
 
-**Errors:** `missing_key`, `invalid_key`
+**Errors:** `missing_key`, `invalid_key`, `service_unavailable`
 
 ---
 
@@ -985,6 +987,7 @@ Synchronous per-item ingest from StockX email parser and Google Sheet.
 ```json
 {
   "run": {
+    "run_id": "uuid-per-apps-script-execution",
     "source": "stockx | google_sheet",
     "trigger": "cron | manual",
     "started_at": "2026-08-29T06:00:00+00:00"
@@ -1001,20 +1004,39 @@ Synchronous per-item ingest from StockX email parser and Google Sheet.
       "source": "stockx | google_sheet",
       "source_ref": "unique-per-event-id",
       "stockx_internal_id": "optional",
-      "image_url": "https://…",
       "allow_create": true
     }
   ]
 }
 ```
 
+The Google Sheet (and StockX parser) do **not** send image URLs or margins. Unknown keys such as a leftover `image_url` are stripped. Margins are resolved server-side: listing override → group → system default (§5). Sheet/email payloads never write `media.product_images`.
+
+After every item transaction has **committed**, unique SKUs in the chunk are looked up on [KicksDB GOAT Get Products](https://docs.kicks.dev/recipes/goat-get-product) (`GET https://api.kicks.dev/v3/goat/products?query={sku}`, `Authorization: Bearer {KICKSDB_API_KEY}`). That fetch is **never** inside `sql.begin()`. A list hit is kept only on an exact SKU match (hyphens/spaces ignored); `data[0]` by popularity is discarded. When the list row has `images: null`, a second `GET /v3/goat/products/{id}` loads the `images[]` array.
+
+| Persisted from KicksDB | Column |
+|---|---|
+| Product name | `products.product_name`, `products.title` |
+| Brand | `products.brand`, `products.vendor` |
+| Model | `products.model` |
+| Description | `products.description` (plain), `products.body_html` (`<p>` escaped) |
+| Colorway | `products.colorway` |
+| Season | `products.season` (trimmed) |
+| `images[]` URLs | `media.product_images` (`source = kicksdb`, `sort_order` from the array). Falls back to `image_url` when `images` is empty |
+| Release date | `products.release_date` (calendar date) |
+| Release year | `products.release_date_year` |
+
+A hit stamps `kicks_product_id` and `kicks_enriched_at`. A miss still stamps `kicks_looked_up_at` so the hourly crawl does not re-query. A thrown/HTTP-error lookup leaves the stamp unset and is retried on the next ingest. Catalog lookup failure **does not** fail the ingest batch (the 200 still returns per-item pricing outcomes). When `KICKSDB_API_KEY` is unset, this step is skipped. Subsequent sheet names do not overwrite `product_name` / `brand` once `kicks_enriched_at` is set. Dashboard uploads (`POST /api/v1/products/{sku}/images`) remain the way operators add or replace images.
+
 | Field | Notes |
 |---|---|
-| `run` | Groups chunks of one Apps Script execution |
+|---|---|
+| `run.run_id` | Groups chunks of one Apps Script execution; reused across retries of the same run |
 | `source_ref` | Idempotency key per item; replay returns stored result with `idempotent: true` |
 | `allow_create` | `false` + unknown SKU → item outcome `unknown_sku` |
-| `currency` | Defaults HKD; only HKD accepted |
-| `quantity` | ≥ 0 (0 = sold out) |
+| `currency` | Defaults HKD; only HKD accepted (`invalid_currency` per item) |
+| `cost`, `quantity` | Optional; blank leaves the stored value. New listing with no cost → `missing_cost` |
+| `quantity` | ≥ 0 (0 = sold out). StockX quantity is forced to 1 |
 | Batch size | ≤ `accepts_max_items` from health endpoint |
 
 **Per-item processing (each in its own transaction):**
@@ -1022,14 +1044,14 @@ Synchronous per-item ingest from StockX email parser and Google Sheet.
 1. Insert `price_updates` (or return idempotent result on `(source, source_ref)` conflict)
 2. Resolve/create product (default group), listing, sources
 3. Lock listing; update source cost/qty; recompute `base_cost` and candidate price (§5)
-4. Run approval decision
-5. Optional image upsert to Storage
-6. Write `price_history`; finalize `price_updates` row
-7. Enqueue `shopify_sync_jobs` — **never** call Shopify inline
+4. Run approval decision (margins from override → group → default, never from the payload)
+5. Write `price_history`; finalize `price_updates` row
+6. Enqueue `shopify_sync_jobs` — **never** call Shopify inline
+7. After the item transactions commit: KicksDB GOAT catalog lookup per unseen SKU (see above)
 
 Item failure → `status='error'` on that item; batch continues.
 
-**Response `data`:** per-item results with `outcome`, `idempotent`, `listing_id`, etc.
+**Response `data`:** `{ run_id, items: [{ source_ref, ok, status, outcome, error, listing_id, idempotent }] }`
 
 **Request-level errors:** `run_mismatch`, `batch_too_large`, `missing_key`, `invalid_key`
 
@@ -1068,6 +1090,7 @@ Most writes trigger a consistent set of downstream effects:
 | `audit_log` | Every mutation |
 | `shopify_sync_jobs` | Approved price or inventory change when publishing enabled (else `deferred`) |
 | `jobs` / `job_items` | Group apply, settings recompute, group deletion reassignment |
+| KicksDB GOAT catalog | After `POST /api/ingest` item txs, when `KICKSDB_API_KEY` is set: `products` catalog columns + `media.product_images` |
 
 **Actor labels** in history: `系統自動`, `爬取更新`, `分組批次更新`, or the user's display name.
 

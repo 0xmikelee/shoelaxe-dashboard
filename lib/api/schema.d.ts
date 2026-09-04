@@ -4,6 +4,58 @@
  */
 
 export interface paths {
+    "/api/ingest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Synchronous per-item ingest from StockX email and Google Sheet
+         * @description Machine ingest. The payload is identity + cost/quantity only: the Google Sheet no longer sends image URLs or margins. Margins are resolved server-side (listing override → group → system default). Item failures surface as per-item outcomes inside a 200; the batch continues.
+         *
+         *     Each item runs in its own transaction. Shopify is enqueued, never called inline. After those transactions commit, unique SKUs are looked up on KicksDB GOAT (`GET /v3/goat/products?query=SKU`) and catalog fields plus `images[]` URLs are saved.
+         *
+         *     **Consumed by:** machine: Apps Script (GmailStockX.gs, SheetUpdater.gs)
+         *
+         *     **Idempotency:** Per item on (source, source_ref). Replay returns the stored result with idempotent: true.
+         *
+         *     **Side effects:** price_updates; price_history on real change; audit_log; shopify_sync_jobs (deferred while PUBLISH_TARGET=none); crawl_runs; products catalog from KicksDB GOAT (after item txs; skipped when KICKSDB_API_KEY is unset); media.product_images from KicksDB images[] (source kicksdb)
+         */
+        post: operations["ingestBatch"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/ingest/health": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Connection test and batch sizing for Apps Script
+         * @description The script reads accepts_max_items at run start so batch size can change server-side without redeploy.
+         *
+         *     **Consumed by:** machine: Apps Script (testIngestConnection)
+         *
+         *     **Idempotency:** Safe.
+         */
+        get: operations["ingestHealth"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/approvals": {
         parameters: {
             query?: never;
@@ -958,6 +1010,177 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    ingestBatch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    run: {
+                        run_id: string;
+                        /** @enum {string} */
+                        source: "stockx" | "google_sheet";
+                        /** @enum {string} */
+                        trigger: "cron" | "manual";
+                        /** Format: date-time */
+                        started_at: string;
+                    };
+                    updates: {
+                        product_name: string;
+                        product_sku: string;
+                        brand: string;
+                        size: string;
+                        cost?: string | null;
+                        quantity?: number | null;
+                        /** @default HKD */
+                        currency?: string;
+                        /** @enum {string} */
+                        source: "stockx" | "google_sheet";
+                        source_ref: string;
+                        stockx_internal_id?: string | null;
+                        /** @default true */
+                        allow_create?: boolean;
+                    }[];
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: {
+                            run_id: string;
+                            items: {
+                                source_ref: string;
+                                ok: boolean;
+                                /** @enum {string} */
+                                status: "pending" | "applied" | "skipped" | "rejected" | "error";
+                                outcome: ("new_listing" | "price_change" | "quantity_change" | "no_change" | "error" | "cost_change" | "margin_change" | "listing_price_change" | "held_for_approval" | "auto_approved" | "superseded" | "needs_margins" | "unknown_sku" | "invalid_currency" | "missing_cost" | "invalid_size") | null;
+                                error: string | null;
+                                listing_id: string | null;
+                                idempotent: boolean;
+                            }[];
+                        };
+                    };
+                };
+            };
+            /** @description `invalid_json`, `validation_failed` */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description `missing_key`, `invalid_key` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description `run_mismatch` */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description `batch_too_large` */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description `internal_error` */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description `service_unavailable` */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    ingestHealth: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: {
+                            /** @constant */
+                            ok: true;
+                            accepts_max_items: number;
+                        };
+                    };
+                };
+            };
+            /** @description `missing_key`, `invalid_key` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description `internal_error` */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description `service_unavailable` */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
     listApprovals: {
         parameters: {
             query?: {
@@ -1014,7 +1237,7 @@ export interface operations {
                             status: "above_threshold" | "below_threshold" | "within_band" | "pending_new" | "needs_margins" | "rejected" | "superseded";
                             /** @enum {string} */
                             approval_status: "approved" | "pending_new" | "pending_price" | "needs_margins" | "rejected" | "inactive";
-                            outcome: ("new_listing" | "price_change" | "quantity_change" | "no_change" | "error" | "cost_change" | "margin_change" | "listing_price_change" | "held_for_approval" | "auto_approved" | "superseded" | "needs_margins" | "unknown_sku" | "invalid_currency") | null;
+                            outcome: ("new_listing" | "price_change" | "quantity_change" | "no_change" | "error" | "cost_change" | "margin_change" | "listing_price_change" | "held_for_approval" | "auto_approved" | "superseded" | "needs_margins" | "unknown_sku" | "invalid_currency" | "missing_cost" | "invalid_size") | null;
                             /** @enum {string} */
                             engine: "v1" | "v2";
                             pending_since: string | null;

@@ -6,3 +6,4 @@ export * from "./products";
 export * from "./groups";
 export * from "./jobs";
 export * from "./settings";
+export * from "./ingest";

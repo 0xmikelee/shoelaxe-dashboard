@@ -72,7 +72,7 @@ Formula (existing `compute_listing_price`, extended in §5): `price = cost + cos
 
 ### 3.1 Apps Script holds no database credentials
 - Remove Supabase key usage and `callSupabaseRpc_*` from `Code.gs`. Replace with `POST {DASHBOARD_URL}/api/ingest`, header `X-Shoelaxe-Key: {INGEST_SECRET}` (both Script Properties). Not behind Google SSO.
-- Body: `{ run: {source, trigger: 'cron'|'manual', started_at}, updates: [ {product_name, product_sku, brand, size, cost, quantity?, currency? (default 'HKD'), source: 'stockx'|'google_sheet', source_ref, stockx_internal_id?, image_url?, allow_create} ] }`. Batch size is **negotiated, not hard-coded**: `GET /api/ingest/health` returns `accepts_max_items` and the script reads it at run start, so the number can change server-side without another manual Apps Script redeploy. Server default 25.
+- Body: `{ run: {run_id, source, trigger: 'cron'|'manual', started_at}, updates: [ {product_name, product_sku, brand, size, cost?, quantity?, currency? (default 'HKD'), source: 'stockx'|'google_sheet', source_ref, stockx_internal_id?, allow_create} ] }`. **No `image_url`, no margins** — the sheet no longer sends either; margins are resolved server-side (override → group → default). Batch size is **negotiated, not hard-coded**: `GET /api/ingest/health` returns `accepts_max_items` and the script reads it at run start, so the number can change server-side without another manual Apps Script redeploy. Server default 25.
 - `source: 'stockx'` maps to the `stockx` listing source (quantity forced to 1); `'google_sheet'` maps to `in_house`.
 - Response: per-item `{ ok, status, outcome, error?, listing_id? }` in order; `SheetUpdater.gs` writes it to the 狀態 column as today (new value: `pending_approval`).
 - Keep `record_and_apply_price_update` for one release as a stub that raises `'use /api/ingest'`.
@@ -85,8 +85,8 @@ Formula (existing `compute_listing_price`, extended in §5): `price = cost + cos
 `GmailStockX.gs` always sends `quantity: 1`; no parsing change beyond the constant. Add a fixture test over the `.eml` files in `files/`.
 
 ### 3.3 Margins leave the Sheet; currency defaults to HKD
-- `SheetUpdater.gs`: remove columns 百分比毛利, 固定毛利, 上架價格 plus all code referencing `MARGIN_PERCENT`, `MARGIN_FIXED`, `LISTING_PRICE`, `computeListingPrice_`, and the listing-price formula/protection (`applyListingPriceFormula_`, `applyLockedListingPriceColumn_`); re-index `SHEET_SYNC.COL`. `formatPriceSheet` migrates an existing sheet in place (delete the three columns, drop their validations/protections, preserve other data).
-- **Final sheet headers (12 columns):** 產品名稱 | 產品貨號 | 品牌 | 尺碼 | 庫存數量 | 成本 | 貨幣 | 圖片網址 | 新產品 | 狀態 | 上次同步 | 錯誤.
+- `SheetUpdater.gs`: remove columns 百分比毛利, 固定毛利, 上架價格, 圖片網址 plus all code referencing `MARGIN_PERCENT`, `MARGIN_FIXED`, `LISTING_PRICE`, `computeListingPrice_`, and the listing-price formula/protection (`applyListingPriceFormula_`, `applyLockedListingPriceColumn_`); re-index `SHEET_SYNC.COL`. `formatPriceSheet` migrates an existing sheet in place (delete the leftover columns, drop their validations/protections, preserve other data).
+- **Final sheet headers (11 columns):** 產品名稱 | 產品貨號 | 品牌 | 尺碼 | 庫存數量 | 成本 | 貨幣 | 新產品 | 狀態 | 上次同步 | 錯誤.
 - **Currency defaults to HKD, not USD.** The 貨幣 column and dropdown stay, but every USD default flips to HKD: `normalizeCurrency_(blank)` → `'HKD'`, bare `$` → `'HKD'`, `parseMoney_`/`parseAmount_` fallback `'HKD'`, dropdown help text updated (今天空白預設 USD → 空白預設 HKD). The ingest payload keeps an optional `currency` field defaulting to `'HKD'`. The server currently accepts **HKD only** — any other value is rejected per row (`invalid_currency`, 錯誤 column: 目前僅支援 HKD) — the schema stays per-currency so other currencies can be enabled later without migration.
 - Keep behaviors: blank 品牌 → `deriveBrand_` prefix match; 新產品 rows default quantity to 1 when blank.
 - **Allow quantity 0** (sold out) from both sheet and dashboard: sheet validation becomes ≥ 0, and the `price_updates.quantity` CHECK relaxes from `> 0` to `>= 0`.
@@ -99,9 +99,10 @@ Formula (existing `compute_listing_price`, extended in §5): `price = cost + cos
 3. `select … for update` on the listing.
 4. Update the matching source row's cost (and quantity for `in_house`); recompute `base_cost` (most recent applied update wins) and the candidate selling price via §5.
 5. Run the approval decision (§5).
-6. If `image_url` is present, upsert it into `media.product_images` for the SKU (primary when the SKU has no primary yet; otherwise update the existing primary URL) — this replaces both `.gs` files' separate `upsert_product_image_url` RPC calls.
-7. Write `price_history` on real change; stamp the `price_updates` row (`status, outcome, listing_id, history_id, applied_at, threshold_at_decision`).
-8. Never call Shopify inline — enqueue (§7).
+6. Write `price_history` on real change; stamp the `price_updates` row (`status, outcome, listing_id, history_id, applied_at, threshold_up_percent, threshold_down_percent`).
+7. Never call Shopify inline — enqueue (§7).
+
+Images are a dashboard concern (`POST /api/v1/products/{sku}/images`), not an ingest field.
 
 Each item is one short DB transaction. Item failure → `status='error'` + `error_message`; batch continues. (No serverless duration cap applies — the app runs as a long-lived Node process.)
 
