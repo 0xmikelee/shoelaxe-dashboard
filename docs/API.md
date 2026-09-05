@@ -34,9 +34,10 @@ and `pnpm contract` is re-run.
 12. [Jobs & system health](#jobs--system-health)
 13. [Settings & users](#settings--users)
 14. [Crawl status](#crawl-status)
-15. [Machine routes](#machine-routes)
-16. [Shopify publishing routes](#shopify-publishing-routes-deferred)
-17. [Side effects](#side-effects)
+15. [Apps Script ingest sequence](#apps-script-ingest-sequence)
+16. [Machine routes](#machine-routes)
+17. [Shopify publishing routes](#shopify-publishing-routes-deferred)
+18. [Side effects](#side-effects)
 
 ---
 
@@ -45,7 +46,7 @@ and `pnpm contract` is re-run.
 | Property | Value |
 |---|---|
 | Dashboard API base | `/api/v1` |
-| Machine ingest base | `/api/ingest` (not under `/v1`) |
+| Machine ingest base | `/api/ingest` (not under `/v1`) — [Apps Script sequence](#apps-script-ingest-sequence) |
 | Content type | `application/json` unless noted |
 | Currency | HKD only (stored and transmitted as numeric strings) |
 | Timestamps | RFC 3339 with offset, stored UTC, displayed `Asia/Hong_Kong` |
@@ -949,9 +950,175 @@ Screen 2 crawl panel.
 
 ---
 
+## Apps Script ingest sequence
+
+The Google Apps Script in the sibling repo (`../Shoelaxe/apps-script/`) is a client of **two HTTP
+routes only**. It holds no database credentials, does not call Supabase RPCs or REST, does not
+pre-read `products` / `listings`, and does not drain Shopify. Catalog enrichment (KicksDB) and
+publishing happen **inside** Next.js after the ingest POST returns item outcomes.
+
+Script Properties (replace `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY`):
+
+| Property | Value |
+|---|---|
+| `DASHBOARD_URL` | Origin of this app, no trailing slash (e.g. `https://dashboard.example.com`) |
+| `INGEST_SECRET` | Same value as the server `INGEST_SECRET` (min 16 chars) |
+
+Every request carries `X-Shoelaxe-Key: {INGEST_SECRET}` and `Content-Type: application/json`.
+`GET /api/health` is a load-balancer probe — the script must not use it (no key, no batch size).
+
+| Function | File | HTTP |
+|---|---|---|
+| `testIngestConnection` | `Code.gs` (replaces `testSupabaseConnection`) | `GET /api/ingest/health` |
+| `processStockXEmails` | `GmailStockX.gs` (hourly trigger or **Shoelaxe → 同步 → 電郵通知**) | Health, then chunked `POST /api/ingest` with `run.source: "stockx"` |
+| `syncSheetPricesToSupabase` | `SheetUpdater.gs` (menu **Shoelaxe → 同步 → Google 試算表**) | Health, then chunked `POST /api/ingest` with `run.source: "google_sheet"` |
+| `onOpen`, `formatPriceSheet`, `installHourlyStockXTrigger` | — | None |
+
+One Apps Script **execution** = one `run.run_id` (UUID), reused on every chunk and on retries of
+those chunks. A later hourly tick or menu click generates a **new** `run_id`. Item idempotency is
+`(source, source_ref)`, not `run_id`.
+
+| Source | `source_ref` | Why |
+|---|---|---|
+| StockX email | Gmail `message.getId()` | Stable across hours; a retried mail is a no-op (`idempotent: true`) |
+| Google Sheet | `sheet:{runId}:row:{N}` | A new run reprocesses an edited row; chunk retries inside the same run stay idempotent |
+
+`allow_create` is the sheet **新產品** flag (Gmail always `true`). The script no longer asks Next.js
+whether a SKU exists first — `unknown_sku` on the item result replaces `fetchExistingProductSkus_`
+/ `fetchExistingListingVariants_`.
+
+### Connection test
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Operator
+    participant GAS as Apps Script<br/>testIngestConnection
+    participant NX as Next.js
+
+    Operator->>GAS: Run from editor
+    GAS->>NX: GET /api/ingest/health
+    Note right of GAS: Header X-Shoelaxe-Key
+    alt missing or wrong key
+        NX-->>GAS: 401 missing_key / invalid_key
+        GAS-->>Operator: Fail — check INGEST_SECRET
+    else ok
+        NX-->>GAS: 200 { data: { ok: true, accepts_max_items } }
+        GAS-->>Operator: Pass
+    end
+```
+
+### Ingest run (Gmail or Sheet)
+
+Both sources share the same handshake: **health first** (negotiate chunk size), then **one POST per
+chunk**. Do not fire one HTTP call per row (today's RPC `fetchAll` of 10). Do not call
+`POST /api/shopify/drain`.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Trigger as Hourly cron or menu
+    participant Src as Gmail or sheet
+    participant GAS as Apps Script
+    participant NX as Next.js ingest
+
+    Trigger->>GAS: processStockXEmails or syncSheetPricesToSupabase
+    GAS->>GAS: acquireLock_
+    GAS->>GAS: run_id UUID, started_at now UTC
+
+    GAS->>NX: GET /api/ingest/health
+    NX-->>GAS: 200 accepts_max_items default 25
+
+    alt Gmail
+        GAS->>Src: Search unlabeled StockX threads
+        Src-->>GAS: Parse identity and cost, quantity forced to 1
+        Note over GAS: source_ref is Gmail message id
+    else Google Sheet
+        GAS->>Src: Read price sheet rows, skip already synced
+        Src-->>GAS: Parse 11 columns, new-product flag becomes allow_create
+        Note over GAS: source_ref is sheet run_id row N
+    end
+
+    loop each chunk of at most accepts_max_items
+        GAS->>NX: POST /api/ingest
+        Note right of GAS: Same run_id, trigger, started_at, and source. Body is run plus updates. No image_url, no margins.
+        alt 413 batch_too_large
+            NX-->>GAS: Shrink chunk and retry, health is source of truth
+        else 409 run_mismatch
+            NX-->>GAS: Abort, reused run_id with different source, trigger, or started_at
+        else 401 or 5xx or network
+            NX-->>GAS: Keep run_id, retry the same chunk with the same source_refs
+        else 200
+            NX-->>GAS: 200 with run_id and items, per-item ok status outcome error
+            alt Gmail
+                GAS->>Src: Mark read and label StockX Processed after HTTP 200
+            else Google Sheet
+                GAS->>Src: Write status, error, last-sync from items including pending_approval
+            end
+        end
+    end
+
+    GAS-->>Trigger: Release lock
+```
+
+Per-item failures (`unknown_sku`, `invalid_currency`, `missing_cost`, `rejected`, `error`) ride
+inside the **200**. The batch continues; the script writes that row's `error` and does not abort
+the run. Request-level errors (`missing_key`, `invalid_key`, `batch_too_large`, `run_mismatch`)
+fail the whole HTTP call — retry or abort as in the diagram.
+
+### What Next.js does on each `POST /api/ingest`
+
+Apps Script waits for this response. It must not call KicksDB or Shopify itself. Catalog lookup
+failure does **not** change the 200 item outcomes.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant GAS as Apps Script
+    participant NX as Next.js
+    participant DB as Postgres
+    participant Kicks as KicksDB GOAT
+    participant Worker as Shopify worker
+
+    GAS->>NX: POST /api/ingest (one chunk)
+    NX->>NX: Validate JSON + X-Shoelaxe-Key
+
+    alt first chunk of this run_id
+        NX->>DB: INSERT crawl_runs
+    else later chunk / retry
+        NX->>DB: Reuse crawl_runs row (or 409 run_mismatch)
+    end
+
+    loop each item (own short transaction)
+        NX->>DB: INSERT price_updates (or return stored row if source+source_ref exists)
+        NX->>DB: Upsert product, listing, listing_sources
+        NX->>NX: pickBaseCost → resolveMargins → decide (§5)
+        NX->>DB: price_history, audit_log, enqueue shopify_sync_jobs
+        NX->>DB: Increment crawl_runs ok/error counts
+    end
+
+    opt KICKSDB_API_KEY set (after all item txs commit)
+        NX->>Kicks: GET /v3/goat/products?query={sku}
+        opt list row has images = null
+            NX->>Kicks: GET /v3/goat/products/{id}
+        end
+        NX->>DB: Catalog columns + media.product_images (source kicksdb)
+    end
+
+    NX-->>GAS: 200 { run_id, items[] }
+
+    Note over Worker: Apps Script never calls drain.<br/>Worker publishes later when PUBLISH_TARGET is set.
+```
+
+Field-level contract for the POST body and item results is under [`POST /api/ingest`](#post-apiingest)
+below.
+
+---
+
 ## Machine routes
 
 These live **outside** `/api/v1`. Authenticated with `X-Shoelaxe-Key`, not session cookies.
+Call pattern for Gmail and the Google Sheet: [Apps Script ingest sequence](#apps-script-ingest-sequence).
 
 ### `GET /api/ingest/health`
 
