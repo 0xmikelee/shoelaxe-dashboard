@@ -1,13 +1,24 @@
 import type { RouteDoc } from "@/lib/openapi/registry";
 import { meContract } from "./me";
-import { approvalsContract } from "./approvals";
-import { productsContract } from "./products";
-import { listingsContract } from "./listings";
+import { approvalsContract, approvalsLiveContract } from "./approvals";
+import { productsContract, productsLiveContract } from "./products";
+import { listingsContract, listingsLiveContract } from "./listings";
 import { groupsContract } from "./groups";
 import { jobsContract } from "./jobs";
-import { settingsContract } from "./settings";
+import { settingsContract, settingsLiveContract } from "./settings";
 import { usersContract } from "./users";
 import { crawlContract } from "./crawl";
+
+/**
+ * RouteDocs for endpoints that already have a real `defineRoute` handler. MSW still looks these up
+ * by operationId so the mock stays honest after the provisional entry is deleted.
+ */
+export const LIVE_CONTRACT: RouteDoc[] = [
+  ...approvalsLiveContract,
+  ...productsLiveContract,
+  ...listingsLiveContract,
+  ...settingsLiveContract,
+];
 
 /**
  * Frontend-authored contracts for endpoints the backend has not built yet.
@@ -17,10 +28,9 @@ import { crawlContract } from "./crawl";
  * fails while both exist, and FE-7 is done when this array is empty and docs/openapi.json contains
  * no `x-provisional` operation.
  *
- * Two endpoint families from §6.2 are deliberately absent. `/api/ingest` and `/api/ingest/health` are
- * machine routes with no design screen, so a frontend-authored shape for them would be invention with
- * no consumer; and the Shopify sync/drain routes stay out while publishing is deferred (Gap 25 —
- * 立即同步 ships visible and disabled, so nothing calls them until FE-6).
+ * Two endpoint families from §6.2 are machine routes, not design screens: `/api/ingest` and
+ * `/api/ingest/health` were never provisional. Shopify drain/sync land as real routes in this
+ * slice (Gap 25 still hides the dashboard 立即同步 button until FE-6).
  */
 export const PROVISIONAL: RouteDoc[] = [
   ...meContract,
@@ -33,3 +43,6 @@ export const PROVISIONAL: RouteDoc[] = [
   ...usersContract,
   ...crawlContract,
 ];
+
+/** Every dashboard `/api/v1` contract, landed or not — MSW `defineMock` looks up by operationId. */
+export const CONTRACT_DOCS: RouteDoc[] = [...LIVE_CONTRACT, ...PROVISIONAL];

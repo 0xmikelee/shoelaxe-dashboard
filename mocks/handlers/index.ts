@@ -1,5 +1,5 @@
 import type { HttpHandler } from "msw";
-import { PROVISIONAL } from "@/lib/api/contract";
+import { CONTRACT_DOCS } from "@/lib/api/contract";
 import { approvalsHandlers } from "./approvals";
 import { crawlHandlers } from "./crawl";
 import { groupsHandlers } from "./groups";
@@ -33,7 +33,7 @@ export const handlers: HttpHandler[] = [
  * an unmocked endpoint fails with `onUnhandledRequest: "error"` in tests and with a real 404 in dev,
  * and neither failure names the endpoint that is missing.
  */
-const uncovered = PROVISIONAL.filter((doc) => !registeredOperations().has(doc.operationId));
+const uncovered = CONTRACT_DOCS.filter((doc) => !registeredOperations().has(doc.operationId));
 if (uncovered.length > 0) {
   throw new Error(
     `mocks/handlers is missing ${uncovered.length} operation(s) declared in lib/api/contract: ${uncovered

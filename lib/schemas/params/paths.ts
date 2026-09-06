@@ -15,5 +15,8 @@ export const JobIdPath = z.object({ id: z.uuid() });
 
 export const ProductImagePath = z.object({ sku: Sku, image_id: z.uuid() });
 
+/** `/api/shopify/sync/{listingId}` — listingId, not the v1 `{id}` name, matching the brief. */
+export const ShopifyListingIdPath = z.object({ listingId: z.uuid() });
+
 /** Gap 28: lowercased and URL-encoded. The column is `check (email = lower(email))`. */
 export const AllowedUserEmailPath = z.object({ email: z.email() });

@@ -1,13 +1,20 @@
 import type { CatalogFromKicks } from "@/lib/kicksdb/map";
+import type { ApprovalStatus } from "@/lib/domain/types";
 import type { CatalogImageRow, CatalogProductRow, CatalogRepo } from "./catalog-types";
 
 export class MemoryCatalogRepo implements CatalogRepo {
   readonly products = new Map<string, CatalogProductRow>();
   readonly images: CatalogImageRow[] = [];
   readonly lookups: Array<{ sku: string; catalog: CatalogFromKicks | null }> = [];
+  readonly listings: Array<{ id: string; product_id: string; approval_status: ApprovalStatus }> = [];
+  readonly shopifyJobs: Array<{ listing_id: string; state: "queued" | "deferred" }> = [];
 
   seed(row: CatalogProductRow): void {
     this.products.set(row.product_sku, row);
+  }
+
+  seedListing(row: { id: string; product_id: string; approval_status: ApprovalStatus }): void {
+    this.listings.push(row);
   }
 
   async findBySku(sku: string): Promise<CatalogProductRow | null> {
@@ -42,5 +49,19 @@ export class MemoryCatalogRepo implements CatalogRepo {
       primaryTaken = primaryTaken || is_primary;
       this.images.push({ product_sku: sku, image_url, is_primary, source: "kicksdb", sort_order });
     }
+  }
+
+  async enqueueLiveShopifySync(productId: string, state: "queued" | "deferred"): Promise<number> {
+    let n = 0;
+    for (const listing of this.listings) {
+      if (listing.product_id !== productId) continue;
+      if (listing.approval_status !== "approved" && listing.approval_status !== "pending_price") {
+        continue;
+      }
+      if (this.shopifyJobs.some((j) => j.listing_id === listing.id)) continue;
+      this.shopifyJobs.push({ listing_id: listing.id, state });
+      n += 1;
+    }
+    return n;
   }
 }

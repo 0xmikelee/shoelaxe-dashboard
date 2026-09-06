@@ -1,6 +1,7 @@
 import { decide, type DecisionTrigger } from "@/lib/domain/approval";
 import type { ListingOutcome } from "@/lib/schemas/wire/listings";
 import { iso } from "./clock";
+import { mockConfig } from "./config";
 import { db, resolveListing } from "./db";
 import { money, moneyOrNull, rate } from "./project";
 import { uuidFrom } from "./random";
@@ -15,6 +16,17 @@ import type { Cents, HistoryRowStore, ListingRow, UpdateRow } from "./types";
  */
 
 const now = (): string => iso(Date.now());
+
+/** Honest with the real approve path: a held price becoming live enqueues a Shopify job. */
+export function enqueueShopifySync(listingId: string): void {
+  if (db.shopifySyncJobs.some((j) => j.listing_id === listingId && j.done_at === null)) return;
+  db.shopifySyncJobs.push({
+    listing_id: listingId,
+    state: mockConfig.publishingEnabled ? "queued" : "deferred",
+    created_at: now(),
+    done_at: null,
+  });
+}
 
 let historySequence = 0;
 
@@ -235,6 +247,7 @@ export function setManualPrice(listing: ListingRow, priceCents: Cents, actorLabe
     delta_cents: before === null ? null : priceCents - before,
     delta_percent: before === null || before === 0 ? null : ((priceCents - before) / before) * 100,
   });
+  enqueueShopifySync(listing.id);
 }
 
 /** 確認: the held price becomes the live one. */
@@ -272,6 +285,7 @@ export function approvePending(listing: ListingRow, actorLabel: string): void {
     delta_percent:
       before === null || before === 0 || pending === null ? null : ((pending - before) / before) * 100,
   });
+  enqueueShopifySync(listing.id);
 }
 
 export function rejectPending(listing: ListingRow, actorLabel: string, reason?: string): void {

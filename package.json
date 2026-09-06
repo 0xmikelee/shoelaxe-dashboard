@@ -18,6 +18,7 @@
     "cost": "tsx scripts/token-report.ts",
     "shopify:probe": "tsx scripts/shopify-probe.ts",
     "shopify:ping": "tsx scripts/shopify-ping.ts",
+    "worker": "tsx worker/index.ts",
     "test:components": "vitest run --project components",
     "test:all": "vitest run --project unit --project components",
     "api:types": "openapi-typescript ./docs/openapi.json -o ./lib/api/schema.d.ts",

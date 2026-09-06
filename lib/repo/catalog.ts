@@ -108,4 +108,17 @@ export class PostgresCatalogRepo implements CatalogRepo {
       `;
     });
   }
+
+  async enqueueLiveShopifySync(productId: string, state: "queued" | "deferred"): Promise<number> {
+    const rows = await this.sql`
+      insert into public.shopify_sync_jobs (listing_id, state)
+      select l.id, ${state}
+      from public.listings l
+      where l.product_id = ${productId}::uuid
+        and l.approval_status in ('approved', 'pending_price')
+      on conflict (listing_id) where done_at is null do nothing
+      returning id
+    `;
+    return rows.length;
+  }
 }

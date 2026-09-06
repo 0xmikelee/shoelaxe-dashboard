@@ -15,6 +15,8 @@ export {
   skuQuery,
   upsertProductSet,
 } from "@/lib/shopify/sync";
+export { liveShopifyPublisher, type ShopifyPublisher } from "@/lib/shopify/publisher";
+export type { ProductSetProduct } from "@/lib/shopify/types";
 export {
   API_VERSION,
   INVENTORY_SET_MUTATION,

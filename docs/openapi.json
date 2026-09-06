@@ -653,10 +653,315 @@
         }
       }
     },
+    "/api/shopify/drain": {
+      "post": {
+        "operationId": "drainShopify",
+        "summary": "Claim due shopify_sync_jobs and publish a small batch",
+        "description": "Worker-driven. With PUBLISH_TARGET=none this reports the deferred backlog and never calls Shopify. Apps Script must not call this route.\n\n**Consumed by:** machine: worker drain / local poke\n\n**Idempotency:** Each call claims a different due batch. Safe to retry.\n\n**Side effects:** shopify_sync_jobs; listings.shopify_* ids on success; listings.shopify_sync_error after 5 failures",
+        "tags": [
+          "shopify"
+        ],
+        "security": [
+          {
+            "ingestKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "$schema": "https://json-schema.org/draft/2020-12/schema",
+                      "type": "object",
+                      "properties": {
+                        "target": {
+                          "type": "string",
+                          "enum": [
+                            "none",
+                            "shopify"
+                          ]
+                        },
+                        "claimed": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        },
+                        "published": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        },
+                        "deferred": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        },
+                        "failed": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        },
+                        "skipped": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        }
+                      },
+                      "required": [
+                        "target",
+                        "claimed",
+                        "published",
+                        "deferred",
+                        "failed",
+                        "skipped"
+                      ],
+                      "additionalProperties": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "`missing_key`, `invalid_key`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                },
+                "examples": {
+                  "missing_key": {
+                    "value": {
+                      "error": {
+                        "code": "missing_key",
+                        "message": "…"
+                      }
+                    }
+                  },
+                  "invalid_key": {
+                    "value": {
+                      "error": {
+                        "code": "invalid_key",
+                        "message": "…"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "`internal_error`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                },
+                "examples": {
+                  "internal_error": {
+                    "value": {
+                      "error": {
+                        "code": "internal_error",
+                        "message": "…"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "`service_unavailable`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                },
+                "examples": {
+                  "service_unavailable": {
+                    "value": {
+                      "error": {
+                        "code": "service_unavailable",
+                        "message": "…"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/shopify/sync/{listingId}": {
+      "post": {
+        "operationId": "syncShopifyListing",
+        "summary": "Enqueue one listing for Shopify sync",
+        "description": "Inserts a shopify_sync_jobs row (queued when PUBLISH_TARGET=shopify, deferred otherwise). Does not call Shopify. A pending row for the listing is a no-op with created=false.\n\n**Consumed by:** machine: Sync now / local poke\n\n**Idempotency:** One pending job per listing (unique where done_at is null).\n\n**Side effects:** shopify_sync_jobs",
+        "tags": [
+          "shopify"
+        ],
+        "security": [
+          {
+            "ingestKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "$schema": "https://json-schema.org/draft/2020-12/schema",
+                      "type": "object",
+                      "properties": {
+                        "listing_id": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "state": {
+                          "type": "string",
+                          "enum": [
+                            "queued",
+                            "deferred"
+                          ]
+                        },
+                        "created": {
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [
+                        "listing_id",
+                        "state",
+                        "created"
+                      ],
+                      "additionalProperties": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "`missing_key`, `invalid_key`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                },
+                "examples": {
+                  "missing_key": {
+                    "value": {
+                      "error": {
+                        "code": "missing_key",
+                        "message": "…"
+                      }
+                    }
+                  },
+                  "invalid_key": {
+                    "value": {
+                      "error": {
+                        "code": "invalid_key",
+                        "message": "…"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "`not_found`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                },
+                "examples": {
+                  "not_found": {
+                    "value": {
+                      "error": {
+                        "code": "not_found",
+                        "message": "…"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "`internal_error`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                },
+                "examples": {
+                  "internal_error": {
+                    "value": {
+                      "error": {
+                        "code": "internal_error",
+                        "message": "…"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "`service_unavailable`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                },
+                "examples": {
+                  "service_unavailable": {
+                    "value": {
+                      "error": {
+                        "code": "service_unavailable",
+                        "message": "…"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "listingId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            }
+          }
+        ]
+      }
+    },
     "/api/v1/approvals": {
       "get": {
         "operationId": "listApprovals",
-        "x-provisional": true,
         "summary": "The approval queue, one row per price update",
         "description": "Includes auto-approved rows, which render 無需處理 and carry no action. Gap 6 shapes the row: the design draws two *costs* and no current price, but Δ belongs to the price pair — new price against the last human-approved price — so both pairs ship and the columns get relabelled.\n\n**Consumed by:** Screen 1 (價格監控與審批); deep-linked from Screen 8\n\n**Idempotency:** Safe. meta carries {total, page, per_page, total_pages, publishing}.",
         "tags": [
@@ -1233,7 +1538,6 @@
     "/api/v1/approvals/stats": {
       "get": {
         "operationId": "getApprovalStats",
-        "x-provisional": true,
         "summary": "Screen 1's four metric cards, and the nav pending badge",
         "description": "Takes **no filters** by design (Gap 8): lifetime totals with a 今日 delta, so 通過率 does not change as the user types in the search box. The nav badge and the 待審核 card read the same number from the same call — two sources for one count means they disagree the moment someone approves something.\n\n**Consumed by:** Screen 1 metric cards; shell nav badge\n\n**Idempotency:** Safe. Revalidated after any approve/reject.",
         "tags": [
@@ -6468,7 +6772,6 @@
     "/api/v1/listings/{id}/approve": {
       "post": {
         "operationId": "approveListing",
-        "x-provisional": true,
         "summary": "Accept the held price for one size",
         "description": "`not_pending` (409) is the **expected** race, not a failure: someone else approved it, or a newer update superseded it. It must read as 「此筆已被更新的價格取代」 and trigger a row refetch.\n\n**Consumed by:** Screen 1 (確認); Screen 8 (per-size approve)\n\n**Idempotency:** Second call on the same listing returns `not_pending`, never a double approval.\n\n**Side effects:** price_history (listing_price); audit_log; shopify_sync_jobs",
         "tags": [
@@ -8750,7 +9053,6 @@
     "/api/v1/listings/{id}/price": {
       "post": {
         "operationId": "setListingPrice",
-        "x-provisional": true,
         "summary": "Manual price adjustment, bypassing the approval band",
         "description": "§5 grants this explicitly: a human setting the price deliberately *is* the approval. Gap 22 notes no screen surfaced it — the 統一售價 panel now does, behind a confirmation that names the bypass. Recorded as `manual_price` with the user as actor.\n\n**Consumed by:** Screen 8 (統一售價 → 手動指定售價)\n\n**Idempotency:** Not idempotent.\n\n**Side effects:** price_history (manual_price); audit_log; shopify_sync_jobs",
         "tags": [
@@ -9970,7 +10272,6 @@
     "/api/v1/listings/{id}/reject": {
       "post": {
         "operationId": "rejectListing",
-        "x-provisional": true,
         "summary": "Reject the held price, keeping the old one live",
         "description": "On `pending_new` the listing becomes `rejected`; on `pending_price` it returns to `approved` at the **old** price, which stays live and published.\n\n**Consumed by:** Screen 1 (拒絕); Screen 8\n\n**Idempotency:** Second call returns `not_pending`.\n\n**Side effects:** price_history (listing_status); audit_log",
         "tags": [
@@ -10607,7 +10908,6 @@
     "/api/v1/listings/bulk-approve": {
       "post": {
         "operationId": "bulkApproveListings",
-        "x-provisional": true,
         "summary": "Approve a set of sizes, or every size of one product",
         "description": "Partial by nature — one of the ids may have been superseded a second ago — so it answers 200 with a per-id result rather than failing the batch.\n\n**Consumed by:** Screen 8 (核准所有尺寸); Screen 1 selection\n\n**Idempotency:** Re-running reports `not_pending` per already-approved id rather than erroring.\n\n**Side effects:** price_history; audit_log; shopify_sync_jobs",
         "tags": [
@@ -11691,7 +11991,6 @@
     "/api/v1/products/{sku}": {
       "get": {
         "operationId": "getProduct",
-        "x-provisional": true,
         "summary": "Everything above the fold on Screen 8: content, images, every size, aggregates",
         "description": "**Consumed by:** Screen 8 (產品詳情); Screen 3 row expand; Screen 9 hydration\n\n**Idempotency:** Safe.",
         "tags": [
@@ -12749,7 +13048,6 @@
       },
       "patch": {
         "operationId": "updateProduct",
-        "x-provisional": true,
         "summary": "The Screen 8 draft, committed transactionally in one call",
         "description": "Applies everything or nothing, so there is no partial-failure state for the save — but the §5 decision differs per listing, and the response reports that mix so the UI can say 「3 個尺寸已更新，2 個尺寸的新售價需審核」 (Gap 24).\n\nAbsent means untouched, `null` means clear, a value means set. SKU and sizes are immutable, and only in-house source fields are writable — a write to a `stockx` row is `source_read_only`, which should be unreachable because that card renders no editable control.\n\n**Consumed by:** Screen 8 (儲存變更); Screen 9 stages into this draft\n\n**Idempotency:** One transaction. A failure on any listing commits nothing.\n\n**Side effects:** price_history per changed field; audit_log; shopify_sync_jobs per repriced listing",
         "tags": [
@@ -13743,7 +14041,6 @@
     "/api/v1/products/{sku}/images": {
       "post": {
         "operationId": "uploadProductImage",
-        "x-provisional": true,
         "summary": "Upload one image (multipart)",
         "description": "JPG/PNG, ≤2MB, max 8 per SKU. The body is `multipart/form-data`, which this generator cannot express, so it is documented here rather than typed. Answers with the whole gallery so an optimistic gallery has one thing to reconcile against.\n\n**Consumed by:** Screen 8 (上架圖片 dropzone)\n\n**Idempotency:** Not idempotent: each call adds a row.\n\n**Side effects:** media.product_images; Supabase Storage object; shopify_sync_jobs",
         "tags": [
@@ -14042,7 +14339,6 @@
     "/api/v1/products/{sku}/images/{image_id}": {
       "delete": {
         "operationId": "deleteProductImage",
-        "x-provisional": true,
         "summary": "Delete an image",
         "description": "Deleting the primary promotes the next by `sort_order`; a product with no image publishes as `draft` rather than `active`.\n\n**Consumed by:** Screen 8 (刪除)\n\n**Idempotency:** Idempotent: a second delete is `not_found`.\n\n**Side effects:** media.product_images; Supabase Storage object; shopify_sync_jobs",
         "tags": [
@@ -14301,7 +14597,6 @@
       },
       "patch": {
         "operationId": "updateProductImage",
-        "x-provisional": true,
         "summary": "Set an image primary, or move it in the order",
         "description": "**Consumed by:** Screen 8 (主圖 badge)\n\n**Idempotency:** Idempotent.\n\n**Side effects:** media.product_images; shopify_sync_jobs",
         "tags": [
@@ -14612,7 +14907,6 @@
     "/api/v1/products/{sku}/images/reorder": {
       "post": {
         "operationId": "reorderProductImages",
-        "x-provisional": true,
         "summary": "Commit a drag reorder",
         "description": "The full id list in display order, primary first. Also expressible inside the Screen 8 draft as `image_order`; this endpoint is the standalone path for a reorder committed on its own.\n\n**Consumed by:** Screen 8 (拖曳排序)\n\n**Idempotency:** Idempotent: the payload is the desired end state, not a delta.\n\n**Side effects:** media.product_images.sort_order; shopify_sync_jobs",
         "tags": [
@@ -15827,7 +16121,6 @@
     "/api/v1/settings": {
       "get": {
         "operationId": "getSettings",
-        "x-provisional": true,
         "summary": "Thresholds, the system default margin, the rounding toggle",
         "description": "**Consumed by:** Screen 2 (系統配置)\n\n**Idempotency:** Safe. The same values ride on /me as a snapshot for formula previews.",
         "tags": [
@@ -16013,7 +16306,6 @@
       },
       "patch": {
         "operationId": "updateSettings",
-        "x-provisional": true,
         "summary": "Save changed settings, returning the recompute job when one was needed",
         "description": "Gap 7. Changing a threshold, the default margin or the rounding toggle re-prices every listing resolving to the system default, which is a worker fan-out. The server answers **202** when it enqueued and 200 when nothing needed recomputing, with the identical body either way — so branch on `job`, not on the status code. Without it the screen shows a green tick while prices keep moving for the next minute.\n\nDisabling the default margin must never retroactively unapprove a live price.\n\n**Consumed by:** Screen 2 (儲存設定)\n\n**Idempotency:** Saving unchanged values writes nothing and returns `job: null`.\n\n**Side effects:** pricing_settings; jobs (settings_recompute); audit_log",
         "tags": [

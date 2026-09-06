@@ -1,10 +1,23 @@
 import { describe, expect, it, beforeAll } from "vitest";
 import { z, type ZodType } from "zod";
 import { WIRE_SCHEMAS } from "@/lib/schemas/wire";
-import { PROVISIONAL } from "@/lib/api/contract";
+import { CONTRACT_DOCS, LIVE_CONTRACT, PROVISIONAL } from "@/lib/api/contract";
 import { allRoutes, registerProvisional } from "@/lib/openapi/registry";
 import "@/app/api/ingest/route";
 import "@/app/api/ingest/health/route";
+import "@/app/api/shopify/drain/route";
+import "@/app/api/shopify/sync/[listingId]/route";
+import "@/app/api/v1/approvals/route";
+import "@/app/api/v1/approvals/stats/route";
+import "@/app/api/v1/listings/[id]/approve/route";
+import "@/app/api/v1/listings/[id]/reject/route";
+import "@/app/api/v1/listings/[id]/price/route";
+import "@/app/api/v1/listings/bulk-approve/route";
+import "@/app/api/v1/products/[sku]/route";
+import "@/app/api/v1/products/[sku]/images/route";
+import "@/app/api/v1/products/[sku]/images/[image_id]/route";
+import "@/app/api/v1/products/[sku]/images/reorder/route";
+import "@/app/api/v1/settings/route";
 
 const shared = new Set<unknown>(Object.values(WIRE_SCHEMAS));
 
@@ -14,7 +27,7 @@ const shared = new Set<unknown>(Object.values(WIRE_SCHEMAS));
  * z.object({...}) written at a route cannot drift from what the frontend generated its types from.
  */
 describe("response schemas are shared, not inlined", () => {
-  it.each(PROVISIONAL.filter((d) => d.response).map((d) => [d.operationId, d] as const))(
+  it.each(CONTRACT_DOCS.filter((d) => d.response).map((d) => [d.operationId, d] as const))(
     "%s responds with a schema from lib/schemas/wire",
     (_id, doc) => {
       expect(shared.has(doc.response)).toBe(true);
@@ -31,6 +44,26 @@ describe("implemented routes share wire schemas", () => {
     const ingest = allRoutes().filter((r) => r.path.startsWith("/api/ingest"));
     expect(ingest.map((r) => r.operationId).sort()).toEqual(["ingestBatch", "ingestHealth"]);
     expect(ingest.every((r) => r.provisional !== true)).toBe(true);
+  });
+
+  it("registers the shopify machine routes as real, not provisional", () => {
+    const shopify = allRoutes().filter((r) => r.path.startsWith("/api/shopify"));
+    expect(shopify.map((r) => r.operationId).sort()).toEqual(["drainShopify", "syncShopifyListing"]);
+    expect(shopify.every((r) => r.provisional !== true)).toBe(true);
+  });
+
+  it("registers the dashboard write-loop routes as real, not provisional", () => {
+    const liveIds = LIVE_CONTRACT.map((d) => d.operationId).sort();
+    const registered = allRoutes()
+      .filter((r) => liveIds.includes(r.operationId))
+      .map((r) => r.operationId)
+      .sort();
+    expect(registered).toEqual(liveIds);
+    expect(
+      allRoutes()
+        .filter((r) => liveIds.includes(r.operationId))
+        .every((r) => r.provisional !== true),
+    ).toBe(true);
   });
 
   it("responds with a schema from lib/schemas/wire", () => {
@@ -59,7 +92,7 @@ describe("every schema in the contract is JSON-native", () => {
   });
 
   it.each(
-    PROVISIONAL.flatMap((d) =>
+    CONTRACT_DOCS.flatMap((d) =>
       (["body", "query", "params"] as const)
         .filter((part) => d.request?.[part])
         .map((part) => [`${d.operationId}.${part}`, d.request![part]!] as const),
@@ -75,7 +108,7 @@ describe("every schema in the contract is JSON-native", () => {
  */
 describe("query and path schemas survive the generator's parameter walk", () => {
   it.each(
-    PROVISIONAL.flatMap((d) =>
+    CONTRACT_DOCS.flatMap((d) =>
       (["query", "params"] as const)
         .filter((part) => d.request?.[part])
         .map((part) => [`${d.operationId}.${part}`, d.request![part]!] as const),

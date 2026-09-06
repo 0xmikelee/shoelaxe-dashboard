@@ -52,6 +52,7 @@ export function compactProductSetInput(input: ProductSetInput): Record<string, u
     ...(input.vendor ? { vendor: input.vendor } : {}),
     ...(input.productType ? { productType: input.productType } : {}),
     tags: input.tags,
+    ...(input.files && input.files.length > 0 ? { files: input.files } : {}),
     productOptions: input.productOptions,
     variants: input.variants,
   };
@@ -83,14 +84,19 @@ export async function upsertProductSet(
 
 export async function setAvailableQuantity(
   config: ShopifyAdminConfig,
-  args: { inventoryItemId: string; locationId: string; quantity: number },
+  args: {
+    inventoryItemId: string;
+    locationId: string;
+    quantity: number;
+    referenceDocumentUri: string;
+  },
 ): Promise<void> {
   const data = await adminGraphql<InventorySetData>(config, INVENTORY_SET_MUTATION, {
     idempotencyKey: randomUUID(),
     input: {
       name: "available",
       reason: "correction",
-      referenceDocumentUri: "gid://shoelaxe-dashboard/Sync/canary",
+      referenceDocumentUri: args.referenceDocumentUri,
       quantities: [
         {
           inventoryItemId: args.inventoryItemId,

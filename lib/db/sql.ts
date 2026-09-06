@@ -1,6 +1,6 @@
 import "server-only";
 import postgres from "postgres";
-import { getEnv } from "@/lib/env";
+import { getEnv } from "@/lib/env-core";
 
 /**
  * Lazy postgres.js client. Constructed on first use, never at module scope: `pnpm contract` imports

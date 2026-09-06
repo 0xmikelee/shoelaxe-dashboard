@@ -73,6 +73,7 @@ async function main(): Promise<void> {
     inventoryItemId: variant.inventoryItem.id,
     locationId,
     quantity: CANARY_QTY,
+    referenceDocumentUri: "gid://shoelaxe-dashboard/Sync/canary",
   });
 
   const readBack = await adoptVariantBySku(config, sku);

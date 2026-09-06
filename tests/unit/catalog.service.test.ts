@@ -115,4 +115,35 @@ describe("enrichProductsFromKicks", () => {
     expect(summary.skipped).toBe(1);
     expect(fetchProduct).not.toHaveBeenCalled();
   });
+
+  it("enqueues live listings after a catalog write, not pending_new", async () => {
+    const repo = seededRepo();
+    repo.seedListing({ id: "live", product_id: "prod-1", approval_status: "approved" });
+    repo.seedListing({ id: "held", product_id: "prod-1", approval_status: "pending_price" });
+    repo.seedListing({ id: "new", product_id: "prod-1", approval_status: "pending_new" });
+    await enrichProductsFromKicks([SKU], { repo, fetchProduct: async () => catalog, now: NOW });
+    expect(repo.shopifyJobs).toEqual([
+      { listing_id: "live", state: "deferred" },
+      { listing_id: "held", state: "deferred" },
+    ]);
+  });
+
+  it("enqueues queued jobs when publishing is enabled", async () => {
+    const repo = seededRepo();
+    repo.seedListing({ id: "live", product_id: "prod-1", approval_status: "approved" });
+    await enrichProductsFromKicks([SKU], {
+      repo,
+      fetchProduct: async () => catalog,
+      now: NOW,
+      publishTarget: "shopify",
+    });
+    expect(repo.shopifyJobs).toEqual([{ listing_id: "live", state: "queued" }]);
+  });
+
+  it("does not enqueue when the lookup misses", async () => {
+    const repo = seededRepo();
+    repo.seedListing({ id: "live", product_id: "prod-1", approval_status: "approved" });
+    await enrichProductsFromKicks([SKU], { repo, fetchProduct: async () => null, now: NOW });
+    expect(repo.shopifyJobs).toEqual([]);
+  });
 });

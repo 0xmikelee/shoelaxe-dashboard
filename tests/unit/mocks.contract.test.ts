@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
-import { PROVISIONAL } from "@/lib/api/contract";
+import { CONTRACT_DOCS } from "@/lib/api/contract";
 import { WIRE_SCHEMAS, type WireSchemaName } from "@/lib/schemas/wire";
 import { db, listingById } from "@/mocks/db";
 import { FIXTURES } from "@/mocks/fixtures";
@@ -298,7 +298,7 @@ const CASES: Case[] = [
 ];
 
 const docFor = (operationId: string) => {
-  const doc = PROVISIONAL.find((d) => d.operationId === operationId);
+  const doc = CONTRACT_DOCS.find((d) => d.operationId === operationId);
   if (!doc) throw new Error(`no contract for ${operationId}`);
   return doc;
 };
@@ -306,9 +306,9 @@ const docFor = (operationId: string) => {
 describe("every mocked endpoint answers its own contract", () => {
   it("covers every operation the contract declares", () => {
     const cased = new Set(CASES.map((c) => c.operationId));
-    const missing = PROVISIONAL.filter((doc) => !cased.has(doc.operationId)).map((d) => d.operationId);
+    const missing = CONTRACT_DOCS.filter((doc) => !cased.has(doc.operationId)).map((d) => d.operationId);
     expect(missing, "add a case for each new contract operation").toEqual([]);
-    const unhandled = PROVISIONAL.filter((doc) => !registeredOperations().has(doc.operationId));
+    const unhandled = CONTRACT_DOCS.filter((doc) => !registeredOperations().has(doc.operationId));
     expect(unhandled.map((d) => d.operationId)).toEqual([]);
   });
 
@@ -359,7 +359,7 @@ function imageForm(): FormData {
 
 describe("handlers are mounted on the contract's own paths", () => {
   it("mounts nothing the contract does not declare", () => {
-    const declared = new Set(PROVISIONAL.map((d) => d.operationId));
+    const declared = new Set(CONTRACT_DOCS.map((d) => d.operationId));
     for (const operationId of registeredOperations()) expect(declared.has(operationId)).toBe(true);
   });
 

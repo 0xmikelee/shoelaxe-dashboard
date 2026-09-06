@@ -56,6 +56,58 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/shopify/drain": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Claim due shopify_sync_jobs and publish a small batch
+         * @description Worker-driven. With PUBLISH_TARGET=none this reports the deferred backlog and never calls Shopify. Apps Script must not call this route.
+         *
+         *     **Consumed by:** machine: worker drain / local poke
+         *
+         *     **Idempotency:** Each call claims a different due batch. Safe to retry.
+         *
+         *     **Side effects:** shopify_sync_jobs; listings.shopify_* ids on success; listings.shopify_sync_error after 5 failures
+         */
+        post: operations["drainShopify"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/shopify/sync/{listingId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Enqueue one listing for Shopify sync
+         * @description Inserts a shopify_sync_jobs row (queued when PUBLISH_TARGET=shopify, deferred otherwise). Does not call Shopify. A pending row for the listing is a no-op with created=false.
+         *
+         *     **Consumed by:** machine: Sync now / local poke
+         *
+         *     **Idempotency:** One pending job per listing (unique where done_at is null).
+         *
+         *     **Side effects:** shopify_sync_jobs
+         */
+        post: operations["syncShopifyListing"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/approvals": {
         parameters: {
             query?: never;
@@ -1154,6 +1206,129 @@ export interface operations {
             };
             /** @description `missing_key`, `invalid_key` */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description `internal_error` */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description `service_unavailable` */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    drainShopify: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: {
+                            /** @enum {string} */
+                            target: "none" | "shopify";
+                            claimed: number;
+                            published: number;
+                            deferred: number;
+                            failed: number;
+                            skipped: number;
+                        };
+                    };
+                };
+            };
+            /** @description `missing_key`, `invalid_key` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description `internal_error` */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description `service_unavailable` */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    syncShopifyListing: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                listingId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: {
+                            /** Format: uuid */
+                            listing_id: string;
+                            /** @enum {string} */
+                            state: "queued" | "deferred";
+                            created: boolean;
+                        };
+                    };
+                };
+            };
+            /** @description `missing_key`, `invalid_key` */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description `not_found` */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };

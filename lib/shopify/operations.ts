@@ -71,7 +71,7 @@ export const PRODUCT_SET_MUTATION = /* GraphQL */ `
         id
         title
         status
-        variants(first: 5) {
+        variants(first: 100) {
           nodes {
             id
             sku

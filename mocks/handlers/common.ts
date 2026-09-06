@@ -1,6 +1,6 @@
 import { http, HttpResponse, type HttpHandler } from "msw";
 import { ZodError } from "zod";
-import { PROVISIONAL } from "@/lib/api/contract";
+import { CONTRACT_DOCS } from "@/lib/api/contract";
 import type { RouteDoc } from "@/lib/openapi/registry";
 import { ApiError, ERROR_CODES, type ErrorCode } from "@/lib/http/errors";
 import type { Meta } from "@/lib/http/wire";
@@ -17,7 +17,7 @@ import { db } from "./../db";
  * map through the same zod schema, so `validation_failed` is real rather than simulated.
  */
 
-const DOCS = new Map<string, RouteDoc>(PROVISIONAL.map((doc) => [doc.operationId, doc]));
+const DOCS = new Map<string, RouteDoc>(CONTRACT_DOCS.map((doc) => [doc.operationId, doc]));
 
 const REGISTERED = new Set<string>();
 

@@ -38,6 +38,8 @@ export interface VariantsBySkuData {
   productVariants: { nodes: VariantBySkuNode[] };
 }
 
+export type ProductSetProduct = NonNullable<ProductSetData["productSet"]["product"]>;
+
 export interface ProductSetData {
   productSet: {
     product: {

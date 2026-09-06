@@ -6,6 +6,7 @@ export interface CatalogEnrichDeps {
   repo: CatalogRepo;
   fetchProduct: (sku: string) => Promise<CatalogFromKicks | null>;
   now: string;
+  publishTarget?: "none" | "shopify";
 }
 
 /**
@@ -41,7 +42,11 @@ export async function enrichProductsFromKicks(
 
     await deps.repo.applyLookup(row.id, row.product_sku, catalog, deps.now);
     summary.looked_up += 1;
-    if (catalog != null) summary.enriched += 1;
+    if (catalog != null) {
+      summary.enriched += 1;
+      const state = deps.publishTarget === "shopify" ? "queued" : "deferred";
+      await deps.repo.enqueueLiveShopifySync(row.id, state);
+    }
   }
 
   return summary;

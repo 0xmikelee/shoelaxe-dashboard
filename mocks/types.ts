@@ -241,6 +241,13 @@ export interface MeRow {
   name: string;
 }
 
+export interface ShopifySyncJobRow {
+  listing_id: string;
+  state: "queued" | "deferred";
+  created_at: string;
+  done_at: string | null;
+}
+
 export interface DbState {
   me: MeRow;
   settings: SettingsRow;
@@ -254,4 +261,5 @@ export interface DbState {
   jobItems: JobItemRow[];
   crawlRuns: CrawlRunRow[];
   allowedUsers: AllowedUserRow[];
+  shopifySyncJobs: ShopifySyncJobRow[];
 }

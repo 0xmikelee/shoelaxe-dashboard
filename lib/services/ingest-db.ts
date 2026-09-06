@@ -71,6 +71,7 @@ export async function ingestBatchFromDb(body: IngestBodyInput): Promise<IngestBa
   await enrichCatalogAfterIngest(
     body.updates.map((u) => u.product_sku),
     env.KICKSDB_API_KEY,
+    env.PUBLISH_TARGET,
     now,
   );
 
@@ -84,6 +85,7 @@ export async function ingestBatchFromDb(body: IngestBodyInput): Promise<IngestBa
 async function enrichCatalogAfterIngest(
   skus: readonly string[],
   apiKey: string | undefined,
+  publishTarget: "none" | "shopify",
   now: string,
 ): Promise<void> {
   if (!apiKey) return;
@@ -93,6 +95,7 @@ async function enrichCatalogAfterIngest(
       repo: new PostgresCatalogRepo(getSql()),
       fetchProduct: (sku) => fetchGoatCatalogBySku(sku, { apiKey }),
       now,
+      publishTarget,
     });
     if (summary.looked_up > 0 || summary.failed > 0) {
       log.info("kicksdb_catalog", summary);

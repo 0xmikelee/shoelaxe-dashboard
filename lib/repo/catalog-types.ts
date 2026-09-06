@@ -25,4 +25,6 @@ export interface CatalogRepo {
     catalog: CatalogFromKicks | null,
     now: string,
   ): Promise<void>;
+  /** Enqueue live (`approved` / `pending_price`) listings after a real catalog write. */
+  enqueueLiveShopifySync(productId: string, state: "queued" | "deferred"): Promise<number>;
 }

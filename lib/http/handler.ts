@@ -3,6 +3,7 @@ import { ApiError } from "./errors";
 import { fail, failFrom, ok, type Meta } from "./envelope";
 import { log } from "@/lib/log";
 import { registerRoute, type RouteDoc } from "@/lib/openapi/registry";
+import { MACHINE_ACTOR, type SessionActor } from "./session-auth";
 
 export interface Ctx<B, Q, P> {
   body: B;
@@ -10,6 +11,7 @@ export interface Ctx<B, Q, P> {
   params: P;
   requestId: string;
   req: Request;
+  actor: SessionActor;
 }
 
 export type Handled<T> = { data: T; meta?: Meta; status?: number };
@@ -41,9 +43,13 @@ export function defineRoute<D extends RouteDoc>(
     const started = Date.now();
 
     try {
+      let actor: SessionActor = MACHINE_ACTOR;
       if (doc.auth === "machine") {
         const { assertIngestKey } = await import("@/lib/http/machine-auth");
         assertIngestKey(req);
+      } else if (doc.auth === "session") {
+        const { requireSession } = await import("@/lib/http/session-auth");
+        actor = await requireSession();
       }
 
       let body: unknown;
@@ -75,6 +81,7 @@ export function defineRoute<D extends RouteDoc>(
         params,
         requestId,
         req,
+        actor,
       } as Ctx<never, never, never>);
 
       log.info("request", {

@@ -1,11 +1,15 @@
 import { describe, expect, it } from "vitest";
-import type { PublishableListing } from "@/lib/publishing/desired-state";
 import {
+  NothingToPublishError,
   PublishingError,
   shopifyInventoryQuantity,
   shopifyProductStatus,
+  shopifyProductStatusForProduct,
   toProductSetInput,
+  toProductSetInputForProduct,
   variantSku,
+  type PublishableListing,
+  type PublishableProduct,
 } from "@/lib/publishing/desired-state";
 import { canaryListing } from "@/lib/shopify/canary";
 
@@ -107,5 +111,143 @@ describe("toProductSetInput", () => {
     expect(input.variants[0]?.sku).toBe("SHOELAXE-TEST-US9");
     expect(input.variants[0]?.price).toBe("1234.00");
     expect(input.variants[0]?.inventoryQuantities[0]?.quantity).toBe(2);
+  });
+});
+
+describe("shopifyProductStatusForProduct", () => {
+  const size = (
+    listingStatus: PublishableProduct["listings"][number]["listingStatus"],
+  ): PublishableProduct["listings"][number] => ({
+    size: "US 9",
+    listingStatus,
+    approvedPrice: "1299.00",
+    sources: [{ slot: "in_house", quantity: 1 }],
+  });
+
+  it("is DRAFT when there are no images, even if a size is live", () => {
+    expect(shopifyProductStatusForProduct([size("approved")], false)).toBe("DRAFT");
+  });
+
+  it("is DRAFT when every size is inactive", () => {
+    expect(shopifyProductStatusForProduct([size("inactive"), size("inactive")], true)).toBe("DRAFT");
+  });
+
+  it("is ACTIVE when any size is live and there is an image", () => {
+    expect(shopifyProductStatusForProduct([size("inactive"), size("approved")], true)).toBe("ACTIVE");
+    expect(shopifyProductStatusForProduct([size("pending_price")], true)).toBe("ACTIVE");
+  });
+
+  it("is DRAFT when sizes exist but none have ever been live", () => {
+    expect(shopifyProductStatusForProduct([size("pending_new")], true)).toBe("DRAFT");
+  });
+});
+
+describe("toProductSetInputForProduct", () => {
+  function product(over: Partial<PublishableProduct> = {}): PublishableProduct {
+    return {
+      productSku: "555088-101",
+      title: "Air Jordan 1",
+      descriptionHtml: "<p>Chicago</p>",
+      vendor: "Nike",
+      productType: "Sneakers",
+      tags: ["jordan"],
+      images: [{ url: "https://cdn.example/1.jpg", alt: "hero", sortOrder: 0 }],
+      listings: [
+        {
+          size: "US 8",
+          listingStatus: "approved",
+          approvedPrice: "1299.00",
+          sources: [
+            { slot: "stockx", quantity: 1 },
+            { slot: "in_house", quantity: 3 },
+          ],
+        },
+        {
+          size: "US 10",
+          listingStatus: "approved",
+          approvedPrice: "1399.00",
+          sources: [{ slot: "in_house", quantity: 1 }],
+        },
+      ],
+      ...over,
+    };
+  }
+
+  it("includes every size with an approved price and omits pending candidates", () => {
+    const input = toProductSetInputForProduct(
+      product({
+        listings: [
+          ...product().listings,
+          {
+            size: "US 9",
+            listingStatus: "pending_price",
+            approvedPrice: "1200.00",
+            sources: [{ slot: "in_house", quantity: 2 }],
+          },
+          {
+            size: "US 11",
+            listingStatus: "pending_new",
+            approvedPrice: null,
+            sources: [{ slot: "in_house", quantity: 0 }],
+          },
+        ],
+      }),
+      LOCATION,
+    );
+    expect(input.variants.map((v) => v.sku)).toEqual([
+      "555088-101-US8",
+      "555088-101-US9",
+      "555088-101-US10",
+    ]);
+    expect(input.productOptions[0]?.values.map((v) => v.name)).toEqual(["US 8", "US 9", "US 10"]);
+  });
+
+  it("uses in-house qty per size, never StockX's 1", () => {
+    const input = toProductSetInputForProduct(product(), LOCATION);
+    expect(input.variants[0]?.inventoryQuantities[0]?.quantity).toBe(3);
+    expect(input.variants[1]?.inventoryQuantities[0]?.quantity).toBe(1);
+  });
+
+  it("sends images in sort_order with REPLACE filenames", () => {
+    const input = toProductSetInputForProduct(
+      product({
+        images: [
+          { url: "https://cdn.example/b.jpg", alt: "second", sortOrder: 1 },
+          { url: "https://cdn.example/a.jpg", alt: "first", sortOrder: 0 },
+        ],
+      }),
+      LOCATION,
+    );
+    expect(input.files?.map((f) => f.originalSource)).toEqual([
+      "https://cdn.example/a.jpg",
+      "https://cdn.example/b.jpg",
+    ]);
+    expect(input.files?.[0]?.duplicateResolutionMode).toBe("REPLACE");
+    expect(input.files?.[0]?.contentType).toBe("IMAGE");
+    expect(input.files?.[0]?.alt).toBe("first");
+  });
+
+  it("is DRAFT without images", () => {
+    const input = toProductSetInputForProduct(product({ images: [] }), LOCATION);
+    expect(input.status).toBe("DRAFT");
+    expect(input.files).toBeUndefined();
+  });
+
+  it("throws NothingToPublishError when no listing has approved_price", () => {
+    expect(() =>
+      toProductSetInputForProduct(
+        product({
+          listings: [
+            {
+              size: "US 9",
+              listingStatus: "pending_new",
+              approvedPrice: null,
+              sources: [],
+            },
+          ],
+        }),
+        LOCATION,
+      ),
+    ).toThrow(NothingToPublishError);
   });
 });

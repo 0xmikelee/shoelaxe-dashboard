@@ -50,6 +50,7 @@ import { SettingsUpdateResultWire, SettingsWire, SystemHealthWire } from "./sett
 import { AllowedUserRemovedWire, AllowedUserWire, AllowedUsersListWire } from "./users";
 import { CrawlRunWire, CrawlStatusWire } from "./crawl";
 import { IngestBatchWire, IngestHealthWire, IngestItemResultWire } from "./ingest";
+import { ShopifyDrainWire, ShopifySyncWire } from "./shopify";
 
 /**
  * Every response schema the API may return, by name.
@@ -128,6 +129,9 @@ export const WIRE_SCHEMAS = {
   IngestHealthWire,
   IngestItemResultWire,
   IngestBatchWire,
+
+  ShopifyDrainWire,
+  ShopifySyncWire,
 } satisfies Record<string, ZodType>;
 
 export type WireSchemaName = keyof typeof WIRE_SCHEMAS;

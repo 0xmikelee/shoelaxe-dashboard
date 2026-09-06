@@ -1091,5 +1091,6 @@ export function buildSeed(): DbState {
     jobItems,
     crawlRuns: buildCrawlRuns(),
     allowedUsers: buildAllowedUsers(),
+    shopifySyncJobs: [],
   };
 }
